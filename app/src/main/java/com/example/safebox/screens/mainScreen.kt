@@ -1,6 +1,7 @@
 package com.example.safebox.screens
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,7 +30,9 @@ fun MainScreen(
         rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
             // 사용자가 선택한 사진의 uri
             uri?.let {
-                context.contentResolver.
+                val originalBitmap = context.contentResolver.openInputStream(uri)?.use {
+                    BitmapFactory.decodeStream(it)
+                } ?: throw IllegalArgumentException("Invalid Uri")
             }
         }
 

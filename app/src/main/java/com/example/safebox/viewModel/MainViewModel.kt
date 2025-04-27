@@ -1,5 +1,6 @@
 package com.example.safebox.viewModel
 
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -9,15 +10,16 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor() : ViewModel() {
     /**
-     * 사용자가 선택한 Uri의
+     * 사용자가 선택한 Uri의 bitmap을 3등분한다
      */
-    fun divideUri(uri: Uri) : Triple<String, String, String> {
-        val uriChars = uri.toString().toCharArray()
-        val size = uriChars.size
-        return Triple(
-            first = uriChars.concatToString(0, size/3),
-            second = uriChars.concatToString(size/3, size/3 * 2),
-            third = uriChars.concatToString(size/3 * 2, size)
-        )
+    fun splitBitmap(bitmap: Bitmap){
+
+    }
+
+    /**
+     * 쪼개진 bitmap을 저장한다
+     */
+    fun saveBitmapParts(){
+
     }
 }

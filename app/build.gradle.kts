@@ -42,6 +42,10 @@ android {
 }
 
 dependencies {
+    //RoomDB
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
+
     //hilt
     implementation(libs.hilt.android)
     implementation(libs.hilt.compiler)
