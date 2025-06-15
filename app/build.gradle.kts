@@ -42,13 +42,16 @@ android {
 }
 
 dependencies {
+    // test에 필요해서 내가 따로 추가한 것.
+    testImplementation(libs.truth) // assertion을 사용하기 쉽게 도와주는 라이브러리
+
     //RoomDB
     implementation(libs.room.runtime)
     ksp(libs.room.compiler)
 
     //hilt
     implementation(libs.hilt.android)
-    implementation(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.hilt.navigation.compose)
 

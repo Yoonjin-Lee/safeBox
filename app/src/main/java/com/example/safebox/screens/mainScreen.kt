@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -24,7 +25,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
-    @ApplicationContext context: Context
+    context: Context = LocalContext.current
 ) {
     val pickMedia =
         rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -33,6 +34,7 @@ fun MainScreen(
                 val originalBitmap = context.contentResolver.openInputStream(uri)?.use {
                     BitmapFactory.decodeStream(it)
                 } ?: throw IllegalArgumentException("Invalid Uri")
+                mainViewModel.splitBitmap(originalBitmap)
             }
         }
 

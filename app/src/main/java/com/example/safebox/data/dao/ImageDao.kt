@@ -15,5 +15,5 @@ interface ImageDao {
     fun delete(imageDto: ImageDto)
 
     @Query("SELECT * FROM imagedto")
-    fun getAll()
+    fun getAll() : List<ImageDto>
 }
