@@ -14,18 +14,17 @@ class MainViewModel @Inject constructor() : ViewModel() {
      * params - bitmap, num of chunks
      */
     fun splitBitmap(bitmap: Bitmap, num: Int = 3)
-    : List<Bitmap> {
+            : List<Bitmap> {
         val width = bitmap.width
         val height = bitmap.height
         val partWidth = width / num
 
-        val bitmaps : ArrayList<Bitmap> = arrayListOf()
+        val bitmaps: ArrayList<Bitmap> = arrayListOf()
 
-        for (i in 1..num){
+        for (i in 0 until num) {
             val startX = i * partWidth
-            val chunkWidth = if (i == num - 1) height - startX else partWidth
-            val chunk = Bitmap.createBitmap(bitmap, startX, 0, chunkWidth, height)
-            bitmaps.add(chunk)
+            val chunkWidth = if (i == num - 1) width - startX else partWidth
+            bitmaps.add(Bitmap.createBitmap(bitmap, startX, 0, chunkWidth, height))
         }
 
         return bitmaps
@@ -35,7 +34,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
     /**
      * 쪼개진 bitmap을 저장한다
      */
-    fun saveBitmapParts(){
+    fun saveBitmapParts() {
 
 
     }

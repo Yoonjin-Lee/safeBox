@@ -39,11 +39,16 @@ android {
     buildFeatures {
         compose = true
     }
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
 }
 
 dependencies {
+    implementation(libs.androidx.junit.ktx)
     // test에 필요해서 내가 따로 추가한 것.
     testImplementation(libs.truth) // assertion을 사용하기 쉽게 도와주는 라이브러리
+    testImplementation(libs.robolectric) //UI 테스트를 가능하게 해줌
 
     //RoomDB
     implementation(libs.room.runtime)
