@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.safebox.R
+import com.example.safebox.common.Utils
 import com.example.safebox.viewModel.MainViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 
@@ -73,7 +74,7 @@ fun MainScreen(
                 ))
             }
             itemsIndexed(imageEntityList){ index, item ->
-                val bitmap = BitmapFactory.decodeByteArray(item.byteArray, 0, item.byteArray.size)
+                val bitmap = Utils.byteArrayToBitmap(item.byteArray)
 
                 bitmap?.let {
                     Image(

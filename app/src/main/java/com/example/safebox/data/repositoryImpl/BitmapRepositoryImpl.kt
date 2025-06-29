@@ -31,7 +31,7 @@ class BitmapRepositoryImpl @Inject constructor(
     @OptIn(ExperimentalUnsignedTypes::class)
     override suspend fun getBitmapList(): Flow<List<ImageEntity>> {
         return imageDao.getAllFlow().map { it -> it.map {
-            val byteArray = Utils.decrypt(it.bitmap.toUByteArray().toByteArray())
+            val byteArray = Utils.decrypt(it.bitmap)
             it.toEntity(byteArray)
         } }
     }
