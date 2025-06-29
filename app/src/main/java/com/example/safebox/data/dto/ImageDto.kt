@@ -4,6 +4,9 @@ import android.graphics.Bitmap
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.ByteArrayOutputStream
+import java.util.UUID
+import kotlin.random.Random
 
 @Entity
 data class ImageDto(
@@ -26,4 +29,24 @@ data class ImageDto(
         result = 31 * result + bitmap.contentHashCode() // ▲ 핵심
         return result
     }
+}
+
+fun Bitmap.toImageDto(format: String): ImageDto {
+    // format string에 따라 compress 형식을 지정
+    val compressFormat = when (format) {
+        "PNG" -> Bitmap.CompressFormat.PNG
+        "JPEG" -> Bitmap.CompressFormat.JPEG
+        "WEBP" -> Bitmap.CompressFormat.WEBP
+        else -> throw IllegalArgumentException("Invalid format: $format")
+    }
+
+    val byteArray = ByteArrayOutputStream().use {
+        this.compress(compressFormat, 100, it)
+        it.toByteArray()
+    }
+    return ImageDto(
+        uuid = UUID.randomUUID().toString(),
+        format = format,
+        bitmap = byteArray
+    )
 }

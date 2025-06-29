@@ -3,12 +3,18 @@ package com.example.safebox.viewModel
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.safebox.domain.usecase.SaveBitmapUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.net.URI
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor() : ViewModel() {
+class MainViewModel @Inject constructor(
+    private val saveBitmapUseCase: SaveBitmapUseCase
+) : ViewModel() {
     /**
      * 사용자가 선택한 Uri의 bitmap을 3등분한다
      * params - bitmap, num of chunks
@@ -34,8 +40,23 @@ class MainViewModel @Inject constructor() : ViewModel() {
     /**
      * 쪼개진 bitmap을 저장한다
      */
-    fun saveBitmapParts() {
+    fun saveBitmapParts(params : List<Bitmap>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            saveBitmapUseCase(params)
+        }
+    }
 
+    /**
+     * bitmap을 사용자가 지정한 제목으로 인코딩한다
+     */
+    fun encodeBitmap(){
+
+    }
+
+    /**
+     * 인코딩된 bitmap을 사용자가 지정한 이름으로 디코딩한다
+     */
+    fun decodeBitmap(){
 
     }
 }

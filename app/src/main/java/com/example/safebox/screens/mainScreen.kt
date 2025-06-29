@@ -24,9 +24,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 
 @Composable
 fun MainScreen(
-    mainViewModel: MainViewModel = hiltViewModel(),
-    context: Context = LocalContext.current
 ) {
+    val mainViewModel: MainViewModel = hiltViewModel()
+    val context = LocalContext.current
+
     val pickMedia =
         rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
             // 사용자가 선택한 사진의 uri
@@ -34,7 +35,8 @@ fun MainScreen(
                 val originalBitmap = context.contentResolver.openInputStream(uri)?.use {
                     BitmapFactory.decodeStream(it)
                 } ?: throw IllegalArgumentException("Invalid Uri")
-                mainViewModel.splitBitmap(originalBitmap)
+                val bitmapList = mainViewModel.splitBitmap(originalBitmap)
+                mainViewModel.saveBitmapParts(bitmapList)
             }
         }
 

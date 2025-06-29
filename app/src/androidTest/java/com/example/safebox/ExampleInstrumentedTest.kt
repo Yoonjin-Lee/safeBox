@@ -1,12 +1,20 @@
 package com.example.safebox
 
+import android.content.Context
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.safebox.domain.repository.BitmapRepository
+import com.example.safebox.domain.usecase.SaveBitmapUseCase
+import com.example.safebox.viewModel.MainViewModel
 
 import org.junit.Test
 import org.junit.runner.RunWith
 
 import org.junit.Assert.*
+import org.junit.Before
 
 /**
  * Instrumented test, which will execute on an Android device.
