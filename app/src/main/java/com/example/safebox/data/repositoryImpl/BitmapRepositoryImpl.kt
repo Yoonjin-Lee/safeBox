@@ -14,6 +14,7 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import java.io.ByteArrayOutputStream
 
 class BitmapRepositoryImpl @Inject constructor(
     private val imageDao: ImageDao,
@@ -26,8 +27,12 @@ class BitmapRepositoryImpl @Inject constructor(
         )
     }
 
+    @OptIn(ExperimentalUnsignedTypes::class)
     override suspend fun getBitmapList(): Flow<List<ImageEntity>> {
-        return imageDao.getAllFlow().map { it -> it.map { it.toEntity() } }
+        return imageDao.getAllFlow().map { it -> it.map {
+            val byteArray = it.bitmap.toUByteArray().toByteArray()
+            it.toEntity(byteArray)
+        } }
     }
 
     override suspend fun increaseImageCounter() {

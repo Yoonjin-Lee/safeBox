@@ -63,6 +63,15 @@ fun ImageDto.toEntity() : ImageEntity {
     )
 }
 
+fun ImageDto.toEntity(byteArray: ByteArray) : ImageEntity {
+    return ImageEntity(
+        id = uuid,
+        format = format,
+        byteArray = byteArray,
+        name = name
+    )
+}
+
 fun ByteArray.toImageDto(format: String, name: String? = null) : ImageDto {
     return ImageDto(
         uuid = UUID.randomUUID().toString(),
