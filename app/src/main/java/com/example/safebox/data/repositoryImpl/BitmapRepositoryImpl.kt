@@ -33,7 +33,6 @@ class BitmapRepositoryImpl @Inject constructor(
         return imageDao.getAllFlow().map { it -> it.map {
             val byteArray = Utils.decrypt(it.bitmap.toUByteArray().toByteArray())
             it.toEntity(byteArray)
-            //it.toEntity(Utils.decrypt(it.bitmap.toUByteArray().toByteArray()))
         } }
     }
 
