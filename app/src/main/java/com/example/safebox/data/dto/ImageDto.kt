@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.safebox.domain.entity.ImageEntity
 import java.io.ByteArrayOutputStream
 import java.util.UUID
 import kotlin.random.Random
@@ -12,6 +13,7 @@ import kotlin.random.Random
 data class ImageDto(
     @PrimaryKey val uuid: String,
     @ColumnInfo val format: String,
+    @ColumnInfo val name: String? = null,
     @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
     val bitmap: ByteArray
 ){
@@ -31,7 +33,7 @@ data class ImageDto(
     }
 }
 
-fun Bitmap.toImageDto(format: String): ImageDto {
+fun Bitmap.toImageDto(format: String, name: String? = null): ImageDto {
     // format string에 따라 compress 형식을 지정
     val compressFormat = when (format) {
         "PNG" -> Bitmap.CompressFormat.PNG
@@ -47,6 +49,16 @@ fun Bitmap.toImageDto(format: String): ImageDto {
     return ImageDto(
         uuid = UUID.randomUUID().toString(),
         format = format,
-        bitmap = byteArray
+        bitmap = byteArray,
+        name = name
+    )
+}
+
+fun ImageDto.toEntity() : ImageEntity {
+    return ImageEntity(
+        id = uuid,
+        format = format,
+        byteArray = bitmap,
+        name = name
     )
 }

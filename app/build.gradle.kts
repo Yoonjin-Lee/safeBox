@@ -45,6 +45,9 @@ android {
 }
 
 dependencies {
+    //dataStore
+    implementation(libs.datastore.preferences)
+
     implementation(libs.androidx.junit.ktx)
     // test에 필요해서 내가 따로 추가한 것.
     testImplementation(libs.truth) // assertion을 사용하기 쉽게 도와주는 라이브러리
@@ -59,6 +62,7 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.lifecycle.runtime.compose)
     implementation(libs.hilt.navigation.compose)
 
     implementation(libs.androidx.core.ktx)

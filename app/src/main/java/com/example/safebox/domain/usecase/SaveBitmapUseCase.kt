@@ -21,5 +21,6 @@ class SaveBitmapUseCase @Inject constructor(
                 Log.e("SaveBitmapUseCase", "execute: ", e)
             }
         }
+        bitmapRepository.increaseImageCounter()
     }
 }

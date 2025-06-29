@@ -1,20 +1,31 @@
 package com.example.safebox.viewModel
 
 import android.graphics.Bitmap
+import android.media.Image
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.safebox.domain.entity.ImageEntity
+import com.example.safebox.domain.usecase.GetBitmapsUseCase
 import com.example.safebox.domain.usecase.SaveBitmapUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.net.URI
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val saveBitmapUseCase: SaveBitmapUseCase
+    private val saveBitmapUseCase: SaveBitmapUseCase,
+    private val getBitmapsUseCase: GetBitmapsUseCase
 ) : ViewModel() {
+    private var _bitmaps = MutableStateFlow<List<ImageEntity>>(emptyList())
+    val bitmaps: StateFlow<List<ImageEntity>> = _bitmaps
+
     /**
      * 사용자가 선택한 Uri의 bitmap을 3등분한다
      * params - bitmap, num of chunks
@@ -58,5 +69,14 @@ class MainViewModel @Inject constructor(
      */
     fun decodeBitmap(){
 
+    }
+
+    init {
+        viewModelScope.launch {
+            getBitmapsUseCase(Unit).collectLatest {
+                _bitmaps.value = it
+                Log.d("MainViewModel", "bitmaps: ${it.size}")
+            }
+        }
     }
 }

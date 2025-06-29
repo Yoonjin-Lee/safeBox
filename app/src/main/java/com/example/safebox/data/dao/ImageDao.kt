@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.example.safebox.data.dto.ImageDto
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ImageDao {
@@ -15,5 +16,5 @@ interface ImageDao {
     fun delete(imageDto: ImageDto)
 
     @Query("SELECT * FROM imagedto")
-    fun getAll() : List<ImageDto>
+    fun getAllFlow() : Flow<List<ImageDto>>
 }

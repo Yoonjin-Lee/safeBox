@@ -1,7 +1,8 @@
-package com.example.safebox.data
+package com.example.safebox.data.module
 
 import android.content.Context
 import androidx.room.Room
+import com.example.safebox.data.Database
 import com.example.safebox.data.dao.ImageDao
 import dagger.Module
 import dagger.Provides
@@ -19,6 +20,7 @@ object RoomModule {
         @ApplicationContext context: Context
     ): Database = Room
         .databaseBuilder(context, Database::class.java, "safe_box.db")
+        .fallbackToDestructiveMigration()
         .build()
 
     @Singleton
