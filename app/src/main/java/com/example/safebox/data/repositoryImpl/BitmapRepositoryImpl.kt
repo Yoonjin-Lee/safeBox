@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import com.example.safebox.common.Utils
 import com.example.safebox.data.dao.ImageDao
 import com.example.safebox.data.datastore.PreferenceKeys.IMAGE_COUNTER
 import com.example.safebox.data.dto.toEntity
@@ -30,8 +31,9 @@ class BitmapRepositoryImpl @Inject constructor(
     @OptIn(ExperimentalUnsignedTypes::class)
     override suspend fun getBitmapList(): Flow<List<ImageEntity>> {
         return imageDao.getAllFlow().map { it -> it.map {
-            val byteArray = it.bitmap.toUByteArray().toByteArray()
+            val byteArray = Utils.decrypt(it.bitmap.toUByteArray().toByteArray())
             it.toEntity(byteArray)
+            //it.toEntity(Utils.decrypt(it.bitmap.toUByteArray().toByteArray()))
         } }
     }
 
