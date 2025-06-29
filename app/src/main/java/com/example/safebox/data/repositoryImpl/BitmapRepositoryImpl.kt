@@ -19,7 +19,7 @@ class BitmapRepositoryImpl @Inject constructor(
     private val imageDao: ImageDao,
     private val dataStore: DataStore<Preferences>
 ): BitmapRepository {
-    override suspend fun saveBitmap(bitmap: Bitmap) {
+    override suspend fun saveBitmap(bitmap: ByteArray) {
         val counter = dataStore.data.first()[IMAGE_COUNTER] ?: "0"
         imageDao.insert(
             bitmap.toImageDto(format = "PNG", name = "image$counter")

@@ -6,6 +6,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.safebox.common.Utils
 import com.example.safebox.domain.entity.ImageEntity
 import com.example.safebox.domain.usecase.GetBitmapsUseCase
 import com.example.safebox.domain.usecase.SaveBitmapUseCase
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import java.net.URI
 import javax.inject.Inject
 
@@ -51,7 +53,7 @@ class MainViewModel @Inject constructor(
     /**
      * 쪼개진 bitmap을 저장한다
      */
-    fun saveBitmapParts(params : List<Bitmap>) {
+    fun saveBitmapParts(params: List<ByteArray>) {
         viewModelScope.launch(Dispatchers.IO) {
             saveBitmapUseCase(params)
         }
@@ -60,14 +62,16 @@ class MainViewModel @Inject constructor(
     /**
      * bitmap을 사용자가 지정한 제목으로 인코딩한다
      */
-    fun encodeBitmap(){
-
+    fun encodeBitmap(params: List<Bitmap>): List<ByteArray> {
+        return params.map { ByteArrayOutputStream().use{
+            it.toByteArray()
+        } }
     }
 
     /**
      * 인코딩된 bitmap을 사용자가 지정한 이름으로 디코딩한다
      */
-    fun decodeBitmap(){
+    fun decodeBitmap() {
 
     }
 

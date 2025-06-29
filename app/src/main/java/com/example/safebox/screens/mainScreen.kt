@@ -47,7 +47,8 @@ fun MainScreen(
                     BitmapFactory.decodeStream(it)
                 } ?: throw IllegalArgumentException("Invalid Uri")
                 val bitmapList = mainViewModel.splitBitmap(originalBitmap)
-                mainViewModel.saveBitmapParts(bitmapList)
+                val encodedList = mainViewModel.encodeBitmap(bitmapList)
+                mainViewModel.saveBitmapParts(encodedList)
             }
         }
 
