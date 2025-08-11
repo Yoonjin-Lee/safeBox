@@ -45,6 +45,9 @@ android {
 }
 
 dependencies {
+    //navigation
+    implementation(libs.navigation)
+
     //dataStore
     implementation(libs.datastore.preferences)
 
@@ -80,4 +83,5 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
 }

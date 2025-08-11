@@ -19,6 +19,7 @@ junitKtx = "1.2.1"
 mockk = "1.14.4"
 datastore = "1.1.7"
 lifecycle-runtime-compose = "2.8.7"
+nav_version = "2.9.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -47,6 +48,7 @@ androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 datastore-preferences = {group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore"}
 lifecycle-runtime-compose = {group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle-runtime-compose"}
+navigation = {group = "androidx.navigation", name = "navigation-compose", version.ref = "nav_version"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
