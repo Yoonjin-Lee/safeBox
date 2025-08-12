@@ -18,7 +18,7 @@ object Utils {
     private val keySpec = SecretKeySpec(FIXED_KEY.toByteArray(), "AES")
     private val ivSpec = IvParameterSpec(FIXED_IV.toByteArray())
 
-    fun encrypt(data: ByteArray): ByteArray {
+    fun encrypt(data: ByteArray, key: String = ""): ByteArray {
         val cipher = Cipher.getInstance(ALGORITHM)
         cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec)
         return cipher.doFinal(data)
