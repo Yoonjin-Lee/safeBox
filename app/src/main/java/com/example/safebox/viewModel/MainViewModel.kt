@@ -79,6 +79,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             getBitmapsUseCase(Unit).collectLatest {
                 _bitmaps.value = it
+
                 Log.d("MainViewModel", "bitmaps: ${it.size}")
             }
         }

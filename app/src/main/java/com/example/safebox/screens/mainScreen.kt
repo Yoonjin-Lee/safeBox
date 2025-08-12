@@ -6,20 +6,30 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -68,22 +78,35 @@ fun MainScreen(
                 )
             }
         )
-        LazyVerticalGrid(
-            modifier = Modifier.weight(1f),
-            columns = GridCells.Fixed(2)
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            itemsIndexed(imageEntityList){ index, item ->
-                val bitmap = BitmapFactory.decodeByteArray(item.byteArray, 0, item.byteArray.size)
-
-                bitmap?.let {
-                    Image(
-                        painter = BitmapPainter(it.asImageBitmap()),
-                        contentDescription = null,
-                        modifier = Modifier.size(200.dp)
-                    )
-                } ?: Text("이미지를 불러올 수 없습니다")
+            for (imageEntity in imageEntityList.groupBy { it.name }){
+                item {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(
+                            text = imageEntity.key ?: "key"
+                        )
+                        LazyRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            items(imageEntity.value) {
+                                val imageBitmap = BitmapFactory.decodeByteArray(it.byteArray, 0, it.byteArray.size)
+                                Image(
+                                    bitmap = imageBitmap.asImageBitmap(),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(100.dp),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 }
-
