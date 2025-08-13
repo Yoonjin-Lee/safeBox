@@ -3,4 +3,7 @@
     <string name="upload_picture">사진을 업로드하세요</string>
     <string name="picture_list">사진 리스트</string>
     <string name="photos">photos</string>
+    <string name="input_key">키로 사용할 문구를 작성해주세요</string>
+    <string name="input_key_placeholder">문구를 작성하세요</string>
+    <string name="confirm">확인</string>
 </resources>
