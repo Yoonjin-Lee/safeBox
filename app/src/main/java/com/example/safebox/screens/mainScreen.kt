@@ -61,22 +61,8 @@ fun MainScreen(
 ) {
 
     val mainViewModel: MainViewModel = hiltViewModel()
-    val context = LocalContext.current
     val imageEntityList by mainViewModel.bitmaps.collectAsStateWithLifecycle()
     var showInputKeyDialog by remember { mutableStateOf(false) }
-
-    val pickMedia =
-        rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-            // 사용자가 선택한 사진의 uri
-            uri?.let {
-                val originalBitmap = context.contentResolver.openInputStream(uri)?.use {
-                    BitmapFactory.decodeStream(it)
-                } ?: throw IllegalArgumentException("Invalid Uri")
-                val bitmapList = mainViewModel.splitBitmap(originalBitmap)
-                val encodedList = mainViewModel.encodeBitmap(bitmapList)
-                mainViewModel.saveBitmapParts(encodedList)
-            }
-        }
 
     if (showInputKeyDialog){
         Dialog(onDismissRequest = { showInputKeyDialog = false }) {

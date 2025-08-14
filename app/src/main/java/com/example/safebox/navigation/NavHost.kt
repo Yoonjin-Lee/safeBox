@@ -23,7 +23,9 @@ fun AppNavHost(){
                 )
             }
             entry(AddScreen){
-                com.example.safebox.screens.AddScreen()
+                com.example.safebox.screens.AddScreen(
+                    onBack = {backStack.removeLastOrNull()}
+                )
             }
         }
     )
