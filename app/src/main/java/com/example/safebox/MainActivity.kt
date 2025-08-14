@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.safebox.navigation.AppNavHost
 import com.example.safebox.screens.MainScreen
 import com.example.safebox.ui.theme.SafeBoxTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,7 +23,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SafeBoxTheme {
-                MainScreen()
+                AppNavHost()
             }
         }
     }

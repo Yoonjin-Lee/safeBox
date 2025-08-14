@@ -34,6 +34,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
@@ -44,6 +47,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.safebox.R
@@ -53,10 +57,13 @@ import com.example.safebox.viewModel.MainViewModel
 @Preview
 @Composable
 fun MainScreen(
+    goToAddScreen: () -> Unit = {},
 ) {
+
     val mainViewModel: MainViewModel = hiltViewModel()
     val context = LocalContext.current
     val imageEntityList by mainViewModel.bitmaps.collectAsStateWithLifecycle()
+    var showInputKeyDialog by remember { mutableStateOf(false) }
 
     val pickMedia =
         rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -71,6 +78,20 @@ fun MainScreen(
             }
         }
 
+    if (showInputKeyDialog){
+        Dialog(onDismissRequest = { showInputKeyDialog = false }) {
+            InputKeyDialog(
+                onClick = {
+                    goToAddScreen()
+                    showInputKeyDialog = false
+                },
+                onDismiss = {
+                    showInputKeyDialog = false
+                }
+            )
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -81,11 +102,12 @@ fun MainScreen(
             title = stringResource(R.string.photos),
             menuIcon = R.drawable.round_add_24,
             onMenuClick = {
-                pickMedia.launch(
-                    PickVisualMediaRequest(
-                        ActivityResultContracts.PickVisualMedia.ImageOnly
-                    )
-                )
+                showInputKeyDialog = true
+//                pickMedia.launch(
+//                    PickVisualMediaRequest(
+//                        ActivityResultContracts.PickVisualMedia.ImageOnly
+//                    )
+//                )
             }
         )
         LazyColumn(

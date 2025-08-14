@@ -48,7 +48,7 @@ fun Header(
         Text(
             modifier = Modifier.weight(1f),
             text = title,
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.labelLarge,
             color = Color.White,
             textAlign = TextAlign.Center
         )

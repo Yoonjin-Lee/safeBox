@@ -1,5 +1,5 @@
 [versions]
-agp = "8.8.2"
+agp = "8.9.1"
 kotlin = "2.0.0"
 coreKtx = "1.16.0"
 junit = "4.13.2"
@@ -7,7 +7,7 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
-composeBom = "2024.04.01"
+composeBom = "2025.08.00"
 hilt = "2.56.2"
 ksp = "2.1.20-2.0.0"
 hilt-navigation-compose = "1.2.0"
@@ -20,6 +20,11 @@ mockk = "1.14.4"
 datastore = "1.1.7"
 lifecycle-runtime-compose = "2.8.7"
 nav_version = "2.9.2"
+nav3Core = "1.0.0-alpha07"
+kotlinSerialization = "2.1.21"
+kotlinxSerializationCore = "1.8.1"
+lifecycleViewmodelNav3 = "1.0.0-alpha04"
+
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -49,6 +54,10 @@ mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 datastore-preferences = {group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore"}
 lifecycle-runtime-compose = {group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle-runtime-compose"}
 navigation = {group = "androidx.navigation", name = "navigation-compose", version.ref = "nav_version"}
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "nav3Core" }
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3Core" }
+androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNav3" }
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationCore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -56,4 +65,5 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt = {id = "com.google.dagger.hilt.android", version.ref = "hilt"}
 ksp = {id = "com.google.devtools.ksp", version.ref = "ksp"}
+jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerialization"}
 

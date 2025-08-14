@@ -6,4 +6,6 @@
     <string name="input_key">키로 사용할 문구를 작성해주세요</string>
     <string name="input_key_placeholder">문구를 작성하세요</string>
     <string name="confirm">확인</string>
+    <string name="upload_photos">Upload Photos</string>
+    <string name="upload_photos_info">Select photos from your gallery to upload.</string>
 </resources>

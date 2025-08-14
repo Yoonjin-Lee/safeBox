@@ -1,24 +1,30 @@
 package com.example.safebox.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.safebox.navigation.Screens.DetailScreen
+import androidx.navigation3.runtime.entry
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.ui.NavDisplay
+import com.example.safebox.navigation.Screens.AddScreen
 import com.example.safebox.navigation.Screens.MainScreen
-import com.example.safebox.screens.DetailScreen
 import com.example.safebox.screens.MainScreen
 
 @Composable
 fun AppNavHost(){
-    val navController = rememberNavController()
+    val backStack = rememberNavBackStack(MainScreen)
 
-    NavHost(navController = navController, startDestination = MainScreen){
-        composable<MainScreen>{
-            MainScreen()
+    NavDisplay(
+        backStack = backStack,
+        onBack = {backStack.removeLastOrNull()},
+        entryProvider = entryProvider {
+            entry(MainScreen){
+                MainScreen(
+                    goToAddScreen = {backStack.add(AddScreen)}
+                )
+            }
+            entry(AddScreen){
+                com.example.safebox.screens.AddScreen()
+            }
         }
-        composable<DetailScreen>{
-            DetailScreen()
-        }
-    }
+    )
 }
