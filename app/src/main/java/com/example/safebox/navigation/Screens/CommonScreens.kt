@@ -11,3 +11,6 @@ data object DetailScreen : NavKey
 
 @Serializable
 data object AddScreen : NavKey
+
+@Serializable
+data object EncodeScreen : NavKey

@@ -28,7 +28,8 @@ import com.example.safebox.viewModel.MainViewModel
 @Preview
 @Composable
 fun AddScreen(
-    onBack: () -> Unit = {}
+    onBack: () -> Unit = {},
+    onNext: () -> Unit = {}
 ){
     val mainViewModel: MainViewModel = hiltViewModel()
     val context = LocalContext.current
@@ -39,9 +40,11 @@ fun AddScreen(
                 val originalBitmap = context.contentResolver.openInputStream(uri)?.use {
                     BitmapFactory.decodeStream(it)
                 } ?: throw IllegalArgumentException("Invalid Uri")
-                val bitmapList = mainViewModel.splitBitmap(originalBitmap)
-                val encodedList = mainViewModel.encodeBitmap(bitmapList)
-                mainViewModel.saveBitmapParts(encodedList)
+                mainViewModel.selectedBitmap = originalBitmap
+                onNext()
+//                val bitmapList = mainViewModel.splitBitmap(originalBitmap)
+//                val encodedList = mainViewModel.encodeBitmap(bitmapList)
+//                mainViewModel.saveBitmapParts(encodedList)
             }
         }
 

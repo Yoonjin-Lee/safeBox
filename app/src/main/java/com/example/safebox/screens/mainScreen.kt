@@ -39,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
@@ -81,19 +82,14 @@ fun MainScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primary)
+            .background(color = colorResource(R.color.background_green))
             .padding(10.dp)
     ) {
         Header(
             title = stringResource(R.string.photos),
             menuIcon = R.drawable.round_add_24,
             onMenuClick = {
-                showInputKeyDialog = true
-//                pickMedia.launch(
-//                    PickVisualMediaRequest(
-//                        ActivityResultContracts.PickVisualMedia.ImageOnly
-//                    )
-//                )
+                goToAddScreen()
             }
         )
         LazyColumn(
@@ -106,7 +102,8 @@ fun MainScreen(
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text(
-                            text = imageEntity.key ?: "key"
+                            text = imageEntity.key ?: "key",
+                            style = MaterialTheme.typography.labelLarge.copy(Color.White)
                         )
                         LazyRow(
                             modifier = Modifier.fillMaxWidth(),

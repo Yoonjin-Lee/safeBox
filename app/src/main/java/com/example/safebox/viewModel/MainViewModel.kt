@@ -1,8 +1,6 @@
 package com.example.safebox.viewModel
 
 import android.graphics.Bitmap
-import android.media.Image
-import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,8 +14,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.io.ByteArrayOutputStream
-import java.net.URI
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,6 +23,8 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
     private var _bitmaps = MutableStateFlow<List<ImageEntity>>(emptyList())
     val bitmaps: StateFlow<List<ImageEntity>> = _bitmaps
+
+    var selectedBitmap: Bitmap? = null
 
     /**
      * 사용자가 선택한 Uri의 bitmap을 3등분한다
