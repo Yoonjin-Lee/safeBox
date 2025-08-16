@@ -2,12 +2,14 @@ package com.example.safebox.screens
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.safebox.R
@@ -28,11 +31,12 @@ import com.example.safebox.component.Header
 fun EncodeScreen(
     onBack: () -> Unit = {},
     bitmap: Bitmap? = null,
-    onEncode: (Bitmap) -> Unit = {}
+    onEncode: (Bitmap, String) -> Unit = {_, _ ->}
 ){
     var text by remember { mutableStateOf("") }
     LazyColumn (
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize()
+            .background(colorResource(R.color.background_green)),
     ) {
        item {
            Column (
@@ -55,6 +59,7 @@ fun EncodeScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .background(colorResource(R.color.dark_button_color), RoundedCornerShape(12.dp))
                         .padding(20.dp)
                 ) {
                     BasicTextField(
@@ -66,7 +71,8 @@ fun EncodeScreen(
                     if (text.isBlank()) {
                         Text(
                             text = stringResource(R.string.input_key_placeholder),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            color = colorResource(R.color.placeholder_color)
                         )
                     }
                 }
@@ -78,10 +84,11 @@ fun EncodeScreen(
                 text = stringResource(R.string.encode),
                 onClick = {
                     bitmap?.let {
-                        onEncode(bitmap)
+                        onEncode(bitmap, text)
                         onBack()
                     }
-                }
+                },
+                isEnabled = text.isNotBlank()
             )
         }
     }

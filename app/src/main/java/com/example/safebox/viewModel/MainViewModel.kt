@@ -60,9 +60,9 @@ class MainViewModel @Inject constructor(
     /**
      * bitmap을 사용자가 지정한 제목으로 인코딩한다
      */
-    fun encodeBitmap(params: List<Bitmap>): List<ByteArray> {
+    fun encodeBitmap(params: List<Bitmap>, key: String): List<ByteArray> {
         return params.map { bitmap ->
-            Utils.encrypt(Utils.bitmapToByteArray(bitmap))
+            Utils.encrypt(Utils.bitmapToByteArray(bitmap), key)
         }
     }
 

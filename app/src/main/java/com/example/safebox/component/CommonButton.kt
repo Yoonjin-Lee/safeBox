@@ -23,7 +23,8 @@ enum class ButtonStyle{
 fun CommonButton(
     buttonStyle: ButtonStyle,
     text: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    isEnabled: Boolean
 ){
     val backgroundColor = when(buttonStyle){
         ButtonStyle.Dark -> colorResource(R.color.dark_button_color)
@@ -32,7 +33,9 @@ fun CommonButton(
     Row(
         modifier = Modifier.padding(20.dp)
             .background(backgroundColor, RoundedCornerShape(1000.dp))
-            .clickable{
+            .clickable(
+                isEnabled
+            ){
                 onClick()
             }
             .padding(horizontal = 16.dp, vertical = 8.dp)

@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -65,7 +66,7 @@ fun MainScreen(
     val imageEntityList by mainViewModel.bitmaps.collectAsStateWithLifecycle()
     var showInputKeyDialog by remember { mutableStateOf(false) }
 
-    if (showInputKeyDialog){
+    if (showInputKeyDialog) {
         Dialog(onDismissRequest = { showInputKeyDialog = false }) {
             InputKeyDialog(
                 onClick = {
@@ -96,7 +97,7 @@ fun MainScreen(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            for (imageEntity in imageEntityList.groupBy { it.name }){
+            for (imageEntity in imageEntityList.groupBy { it.name }) {
                 item {
                     Column(
                         modifier = Modifier.fillMaxWidth(),
@@ -105,20 +106,12 @@ fun MainScreen(
                             text = imageEntity.key ?: "key",
                             style = MaterialTheme.typography.labelLarge.copy(Color.White)
                         )
-                        LazyRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            items(imageEntity.value) {
-                                val imageBitmap = BitmapFactory.decodeByteArray(it.byteArray, 0, it.byteArray.size)
-                                Image(
-                                    bitmap = imageBitmap.asImageBitmap(),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(100.dp),
-                                    contentScale = ContentScale.Crop
-                                )
-                            }
-                        }
+                        Image(
+                            painter = painterResource(R.drawable.ipad),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(height = 100.dp, width = 350.dp)
+                        )
                     }
                 }
             }
@@ -131,7 +124,7 @@ fun MainScreen(
 fun InputKeyDialog(
     onClick: (String) -> Unit = {},
     onDismiss: () -> Unit = {}
-){
+) {
     var key = ""
     Column(
         modifier = Modifier
@@ -151,14 +144,14 @@ fun InputKeyDialog(
                 .fillMaxWidth()
                 .background(color = colorResource(R.color.white), RoundedCornerShape(14.dp))
                 .padding(10.dp)
-        ){
+        ) {
             BasicTextField(
                 value = key,
                 onValueChange = { key = it },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
             )
-            if(key.isEmpty()) {
+            if (key.isEmpty()) {
                 Text(
                     text = stringResource(R.string.input_key_placeholder),
                     style = MaterialTheme.typography.bodyMedium.copy(
@@ -169,7 +162,7 @@ fun InputKeyDialog(
         }
         HorizontalDivider()
         Text(
-            modifier = Modifier.clickable{
+            modifier = Modifier.clickable {
                 onClick(key)
             },
             text = stringResource(R.string.confirm),

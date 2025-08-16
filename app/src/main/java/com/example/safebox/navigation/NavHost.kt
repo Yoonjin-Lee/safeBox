@@ -46,9 +46,9 @@ fun AppNavHost() {
                         backStack.removeLastOrNull()
                     },
                     bitmap = vm.selectedBitmap,
-                    onEncode = {
-                        val bitmaps = vm.splitBitmap(it)
-                        val bitmapParts = vm.encodeBitmap(bitmaps)
+                    onEncode = {bitmap, key ->
+                        val bitmaps = vm.splitBitmap(bitmap)
+                        val bitmapParts = vm.encodeBitmap(bitmaps, key)
                         vm.saveBitmapParts(bitmapParts)
                     }
                 )

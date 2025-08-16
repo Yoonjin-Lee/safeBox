@@ -77,7 +77,8 @@ fun AddScreen(
                         ActivityResultContracts.PickVisualMedia.ImageOnly
                     )
                 )
-            }
+            },
+            isEnabled = true
         )
     }
 }

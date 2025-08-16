@@ -1,6 +1,7 @@
 package com.example.safebox.data.repositoryImpl
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -20,7 +21,7 @@ import java.io.ByteArrayOutputStream
 class BitmapRepositoryImpl @Inject constructor(
     private val imageDao: ImageDao,
     private val dataStore: DataStore<Preferences>
-): BitmapRepository {
+) : BitmapRepository {
     override suspend fun saveBitmap(bitmap: ByteArray) {
         val counter = dataStore.data.first()[IMAGE_COUNTER] ?: "0"
         imageDao.insert(
@@ -30,10 +31,12 @@ class BitmapRepositoryImpl @Inject constructor(
 
     @OptIn(ExperimentalUnsignedTypes::class)
     override suspend fun getBitmapList(): Flow<List<ImageEntity>> {
-        return imageDao.getAllFlow().map { it -> it.map {
-            val byteArray = Utils.decrypt(it.bitmap)
-            it.toEntity(byteArray)
-        } }
+        return imageDao.getAllFlow().map { it ->
+            it.map {
+                //val byteArray = Utils.decrypt(it.bitmap)
+                it.toEntity()
+            }
+        }
     }
 
     override suspend fun increaseImageCounter() {
