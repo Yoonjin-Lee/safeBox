@@ -8,12 +8,13 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.example.safebox.navigation.Screens.AddScreen
+import com.example.safebox.navigation.Screens.DecodeScreenRoute
 import com.example.safebox.navigation.Screens.EncodeScreen
 import com.example.safebox.navigation.Screens.MainScreen
+import com.example.safebox.screens.DecodeScreen
 import com.example.safebox.screens.EncodeScreen
 import com.example.safebox.screens.MainScreen
 import com.example.safebox.viewModel.MainViewModel
-import java.util.Map.entry
 
 @Composable
 fun AppNavHost() {
@@ -29,7 +30,14 @@ fun AppNavHost() {
         entryProvider = entryProvider {
             entry(MainScreen) {
                 MainScreen(
-                    goToAddScreen = { backStack.add(AddScreen) }
+                    goToAddScreen = { backStack.add(AddScreen) },
+                    goToDetailScreen = {
+                        backStack.add(
+                            DecodeScreenRoute(
+                                it
+                            )
+                        )
+                    }
                 )
             }
             entry(AddScreen) {
@@ -46,11 +54,17 @@ fun AppNavHost() {
                         backStack.removeLastOrNull()
                     },
                     bitmap = vm.selectedBitmap,
-                    onEncode = {bitmap, key ->
+                    onEncode = { bitmap, key ->
                         val bitmaps = vm.splitBitmap(bitmap)
                         val bitmapParts = vm.encodeBitmap(bitmaps, key)
                         vm.saveBitmapParts(bitmapParts)
                     }
+                )
+            }
+            entry<DecodeScreenRoute> {
+                DecodeScreen(
+                    onBackClick = { backStack.removeLastOrNull() },
+                    decodedByteArrays = it.byteList
                 )
             }
         }

@@ -26,6 +26,9 @@ class MainViewModel @Inject constructor(
 
     var selectedBitmap: Bitmap? = null
 
+    private var _encodedBitmaps = MutableStateFlow<List<ByteArray>>(emptyList())
+    val encodedBitmaps: StateFlow<List<ByteArray>> = _encodedBitmaps
+
     /**
      * 사용자가 선택한 Uri의 bitmap을 3등분한다
      * params - bitmap, num of chunks
@@ -69,8 +72,10 @@ class MainViewModel @Inject constructor(
     /**
      * 인코딩된 bitmap을 사용자가 지정한 이름으로 디코딩한다
      */
-    fun decodeBitmap() {
-
+    fun decodeBitmap(params: List<ByteArray>, key: String): List<ByteArray> {
+        return params.map { byteArray ->
+            Utils.decrypt(byteArray, key)
+        }
     }
 
     init {

@@ -1,5 +1,6 @@
 package com.example.safebox.navigation.Screens
 
+import android.graphics.Bitmap
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
@@ -7,7 +8,9 @@ import kotlinx.serialization.Serializable
 data object MainScreen : NavKey
 
 @Serializable
-data object DetailScreen : NavKey
+data class DecodeScreenRoute(
+    val byteList: List<ByteArray>,
+) : NavKey
 
 @Serializable
 data object AddScreen : NavKey

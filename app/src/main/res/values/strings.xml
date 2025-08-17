@@ -11,4 +11,7 @@
     <string name="select_photo">select photo</string>
     <string name="encode_photo">Encode Photo</string>
     <string name="encode">Encode</string>
+    <string name="decode_screen">Decoded Photo</string>
+    <string name="save">save</string>
+    <string name="wrong_key">잘못된 키입니다.</string>
 </resources>

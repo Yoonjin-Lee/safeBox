@@ -1,6 +1,8 @@
 package com.example.safebox.screens
 
 import android.graphics.BitmapFactory
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -60,18 +62,31 @@ import com.example.safebox.viewModel.MainViewModel
 @Composable
 fun MainScreen(
     goToAddScreen: () -> Unit = {},
+    goToDetailScreen: (List<ByteArray>) -> Unit = {},
 ) {
 
     val mainViewModel: MainViewModel = hiltViewModel()
     val imageEntityList by mainViewModel.bitmaps.collectAsStateWithLifecycle()
     var showInputKeyDialog by remember { mutableStateOf(false) }
+    var selectedImageBitmaps by remember { mutableStateOf(listOf<ByteArray>()) }
+    val context = LocalContext.current
+    val errorText = stringResource(R.string.wrong_key)
 
     if (showInputKeyDialog) {
         Dialog(onDismissRequest = { showInputKeyDialog = false }) {
             InputKeyDialog(
                 onClick = {
-                    goToAddScreen()
-                    showInputKeyDialog = false
+                    try{
+                        val decodedByteArrays = mainViewModel.decodeBitmap(
+                            selectedImageBitmaps,
+                            it
+                        )
+                        showInputKeyDialog = false
+                        goToDetailScreen(decodedByteArrays)
+                    }catch (e: Exception){
+                        Log.e("MainScreen", "InputKeyDialog: $e")
+                        Toast.makeText(context, errorText, Toast.LENGTH_SHORT).show()
+                    }
                 },
                 onDismiss = {
                     showInputKeyDialog = false
@@ -111,6 +126,10 @@ fun MainScreen(
                             contentDescription = null,
                             modifier = Modifier
                                 .size(height = 100.dp, width = 350.dp)
+                                .clickable {
+                                    selectedImageBitmaps = imageEntity.value.map { it.byteArray }
+                                    showInputKeyDialog = true
+                                }
                         )
                     }
                 }
@@ -125,7 +144,7 @@ fun InputKeyDialog(
     onClick: (String) -> Unit = {},
     onDismiss: () -> Unit = {}
 ) {
-    var key = ""
+    var key by remember { mutableStateOf("") }
     Column(
         modifier = Modifier
             .width(270.dp)
@@ -162,7 +181,9 @@ fun InputKeyDialog(
         }
         HorizontalDivider()
         Text(
-            modifier = Modifier.clickable {
+            modifier = Modifier.clickable(
+                key.isNotBlank()
+            ) {
                 onClick(key)
             },
             text = stringResource(R.string.confirm),
