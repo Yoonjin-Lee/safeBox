@@ -1,5 +1,6 @@
 package com.example.safebox.navigation
 
+import android.provider.MediaStore
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation3.runtime.entry
@@ -64,7 +65,7 @@ fun AppNavHost() {
             entry<DecodeScreenRoute> {
                 DecodeScreen(
                     onBackClick = { backStack.removeLastOrNull() },
-                    decodedByteArrays = it.byteList
+                    decodedByteArrays = it.byteList,
                 )
             }
         }
