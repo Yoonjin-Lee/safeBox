@@ -24,6 +24,9 @@
     <string name="input_key">복호화 키 입력</string>
     <string name="confirm">확인</string>
     <string name="wrong_key">잘못된 키입니다.</string>
+    <string name="delete_title">사진 삭제</string>
+    <string name="delete_confirm">삭제</string>
+    <string name="delete_cancel">취소</string>
 
     <string name="decode_screen">복호화 완료</string>
     <string name="decode_success">복호화 성공</string>

@@ -15,6 +15,9 @@ interface ImageDao {
     @Delete
     fun delete(imageDto: ImageDto)
 
+    @Query("DELETE FROM imagedto WHERE name = :name")
+    fun deleteByName(name: String)
+
     @Query("SELECT * FROM imagedto")
     fun getAllFlow() : Flow<List<ImageDto>>
 }

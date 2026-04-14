@@ -7,4 +7,5 @@ import kotlinx.coroutines.flow.Flow
 interface BitmapRepository {
     suspend fun saveBitmap(bitmap: ByteArray, name: String)
     suspend fun getBitmapList(): Flow<List<ImageEntity>>
+    suspend fun deleteImageGroup(name: String)
 }

@@ -2,8 +2,10 @@ package com.example.safebox.screens
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,9 +21,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +34,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -57,9 +60,52 @@ fun MainScreen(
     val imageEntityList by mainViewModel.bitmaps.collectAsStateWithLifecycle()
     var showInputKeyDialog by remember { mutableStateOf(false) }
     var selectedImageBitmaps by remember { mutableStateOf(listOf<ByteArray>()) }
+    var deleteTargetName by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
     val errorText = stringResource(R.string.wrong_key)
     val grouped = imageEntityList.groupBy { it.name }
+
+    // 삭제 확인 다이얼로그
+    deleteTargetName?.let { name ->
+        AlertDialog(
+            onDismissRequest = { deleteTargetName = null },
+            title = {
+                Text(
+                    text = stringResource(R.string.delete_title),
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                )
+            },
+            text = {
+                Text(
+                    text = "\"$name\" 을(를) 삭제할까요?\n삭제 후에는 복구할 수 없습니다.",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    mainViewModel.deleteImageGroup(name)
+                    deleteTargetName = null
+                }) {
+                    Text(
+                        text = stringResource(R.string.delete_confirm),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { deleteTargetName = null }) {
+                    Text(
+                        text = stringResource(R.string.delete_cancel),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+        )
+    }
 
     if (showInputKeyDialog) {
         Dialog(onDismissRequest = { showInputKeyDialog = false }) {
@@ -179,6 +225,9 @@ fun MainScreen(
                         onClick = {
                             selectedImageBitmaps = entities.map { it.byteArray }
                             showInputKeyDialog = true
+                        },
+                        onLongClick = {
+                            deleteTargetName = name
                         }
                     )
                 }
@@ -188,15 +237,23 @@ fun MainScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun ImageCard(name: String, onClick: () -> Unit) {
+private fun ImageCard(
+    name: String,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit
+) {
     val today = SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).format(Date())
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surface)
-            .clickable { onClick() }
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
     ) {
         Column {
             // 썸네일 영역 — 3분할 바

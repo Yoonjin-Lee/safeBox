@@ -1,5 +1,7 @@
 package com.example.safebox.navigation
 
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -17,14 +19,13 @@ import com.example.safebox.screens.MainScreen
 import com.example.safebox.viewModel.MainViewModel
 
 @Composable
-fun AppNavHost() {
-    val backStack = rememberNavBackStack(
-        MainScreen
-    )
+fun AppNavHost(contentPadding: PaddingValues = PaddingValues()) {
+    val backStack = rememberNavBackStack(MainScreen)
 
     NavDisplay(
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },
+        modifier = androidx.compose.ui.Modifier.padding(contentPadding),
         entryProvider = entryProvider {
             entry(MainScreen) {
                 MainScreen(

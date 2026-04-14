@@ -26,4 +26,8 @@ class BitmapRepositoryImpl @Inject constructor(
             list.map { it.toEntity() }
         }
     }
+
+    override suspend fun deleteImageGroup(name: String) {
+        imageDao.deleteByName(name)
+    }
 }

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.safebox.common.Utils
 import com.example.safebox.domain.entity.ImageEntity
+import com.example.safebox.domain.usecase.DeleteImageGroupUseCase
 import com.example.safebox.domain.usecase.GetBitmapsUseCase
 import com.example.safebox.domain.usecase.SaveBitmapUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val saveBitmapUseCase: SaveBitmapUseCase,
-    private val getBitmapsUseCase: GetBitmapsUseCase
+    private val getBitmapsUseCase: GetBitmapsUseCase,
+    private val deleteImageGroupUseCase: DeleteImageGroupUseCase
 ) : ViewModel() {
     private val _bitmaps = MutableStateFlow<List<ImageEntity>>(emptyList())
     val bitmaps: StateFlow<List<ImageEntity>> = _bitmaps.asStateFlow()
@@ -63,6 +65,12 @@ class MainViewModel @Inject constructor(
     fun saveBitmapParts(params: List<ByteArray>, title: String) {
         viewModelScope.launch(Dispatchers.IO) {
             saveBitmapUseCase(SaveBitmapUseCase.Params(parts = params, name = title))
+        }
+    }
+
+    fun deleteImageGroup(name: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            deleteImageGroupUseCase(name)
         }
     }
 
