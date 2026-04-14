@@ -1,39 +1,27 @@
 package com.example.safebox.screens
 
-import android.graphics.BitmapFactory
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,22 +29,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.safebox.R
 import com.example.safebox.component.Header
 import com.example.safebox.viewModel.MainViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Preview
 @Composable
@@ -64,33 +53,28 @@ fun MainScreen(
     goToAddScreen: () -> Unit = {},
     goToDetailScreen: (List<ByteArray>) -> Unit = {},
 ) {
-
     val mainViewModel: MainViewModel = hiltViewModel()
     val imageEntityList by mainViewModel.bitmaps.collectAsStateWithLifecycle()
     var showInputKeyDialog by remember { mutableStateOf(false) }
     var selectedImageBitmaps by remember { mutableStateOf(listOf<ByteArray>()) }
     val context = LocalContext.current
     val errorText = stringResource(R.string.wrong_key)
+    val grouped = imageEntityList.groupBy { it.name }
 
     if (showInputKeyDialog) {
         Dialog(onDismissRequest = { showInputKeyDialog = false }) {
             InputKeyDialog(
                 onClick = {
-                    try{
-                        val decodedByteArrays = mainViewModel.decodeBitmap(
-                            selectedImageBitmaps,
-                            it
-                        )
+                    try {
+                        val decoded = mainViewModel.decodeBitmap(selectedImageBitmaps, it)
                         showInputKeyDialog = false
-                        goToDetailScreen(decodedByteArrays)
-                    }catch (e: Exception){
+                        goToDetailScreen(decoded)
+                    } catch (e: Exception) {
                         Log.e("MainScreen", "InputKeyDialog: $e")
                         Toast.makeText(context, errorText, Toast.LENGTH_SHORT).show()
                     }
                 },
-                onDismiss = {
-                    showInputKeyDialog = false
-                }
+                onDismiss = { showInputKeyDialog = false }
             )
         }
     }
@@ -98,41 +82,186 @@ fun MainScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = colorResource(R.color.background_green))
-            .padding(10.dp)
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        Header(
-            title = stringResource(R.string.photos),
-            menuIcon = R.drawable.round_add_24,
-            onMenuClick = {
-                goToAddScreen()
-            }
-        )
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        // 헤더
+        Column(
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
         ) {
-            for (imageEntity in imageEntityList.groupBy { it.name }) {
-                item {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = stringResource(R.string.photos),
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    )
+                    Text(
+                        text = stringResource(R.string.photos_count, grouped.size),
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                        )
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .clickable { goToAddScreen() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "+",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Normal
+                        )
+                    )
+                }
+            }
+        }
+
+        if (grouped.isEmpty()) {
+            // 빈 상태
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Box(
+                        modifier = Modifier
+                            .size(64.dp)
+                            .clip(RoundedCornerShape(50))
+                            .background(MaterialTheme.colorScheme.surfaceVariant),
+                        contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = imageEntity.key ?: "key",
-                            style = MaterialTheme.typography.labelLarge.copy(Color.White)
+                            text = "+",
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Light
+                            )
                         )
-                        Image(
-                            painter = painterResource(R.drawable.ipad),
-                            contentDescription = null,
+                    }
+                    Spacer(Modifier.height(12.dp))
+                    Text(
+                        text = "저장된 사진이 없어요",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                        )
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = "+ 버튼을 눌러 사진을 추가해보세요",
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
+                        )
+                    )
+                }
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                item { Spacer(Modifier.height(4.dp)) }
+                items(grouped.entries.toList()) { (name, entities) ->
+                    ImageCard(
+                        name = name ?: "unknown",
+                        onClick = {
+                            selectedImageBitmaps = entities.map { it.byteArray }
+                            showInputKeyDialog = true
+                        }
+                    )
+                }
+                item { Spacer(Modifier.height(16.dp)) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ImageCard(name: String, onClick: () -> Unit) {
+    val today = SimpleDateFormat("yyyy.MM.dd", Locale.getDefault()).format(Date())
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .clickable { onClick() }
+    ) {
+        Column {
+            // 썸네일 영역 — 3분할 바
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(90.dp)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    repeat(3) {
+                        Box(
                             modifier = Modifier
-                                .size(height = 100.dp, width = 350.dp)
-                                .clickable {
-                                    selectedImageBitmaps = imageEntity.value.map { it.byteArray }
-                                    showInputKeyDialog = true
-                                }
+                                .weight(1f)
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                         )
                     }
                 }
+                // 암호화됨 배지
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(10.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(MaterialTheme.colorScheme.background.copy(alpha = 0.7f))
+                        .padding(horizontal = 8.dp, vertical = 3.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.encrypted_badge),
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                            fontSize = 10.sp
+                        )
+                    )
+                }
+            }
+            // 카드 하단 정보
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = name,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Medium
+                    )
+                )
+                Text(
+                    text = today,
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                        fontSize = 11.sp
+                    )
+                )
             }
         }
     }
@@ -147,47 +276,55 @@ fun InputKeyDialog(
     var key by remember { mutableStateOf("") }
     Column(
         modifier = Modifier
-            .width(270.dp)
-            .background(color = colorResource(R.color.light_gray), RoundedCornerShape(14.dp))
-            .padding(vertical = 10.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
+            .width(280.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(vertical = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = stringResource(R.string.input_key),
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleSmall.copy(
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Medium
+            )
         )
         Box(
             modifier = Modifier
-                .padding(10.dp)
+                .padding(horizontal = 16.dp)
                 .fillMaxWidth()
-                .background(color = colorResource(R.color.white), RoundedCornerShape(14.dp))
-                .padding(10.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .padding(horizontal = 14.dp, vertical = 12.dp)
         ) {
             BasicTextField(
                 value = key,
                 onValueChange = { key = it },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
+                textStyle = MaterialTheme.typography.bodyMedium.copy(
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             )
             if (key.isEmpty()) {
                 Text(
                     text = stringResource(R.string.input_key_placeholder),
                     style = MaterialTheme.typography.bodyMedium.copy(
-                        // todo 색 변경
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f)
                     )
                 )
             }
         }
-        HorizontalDivider()
+        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
         Text(
-            modifier = Modifier.clickable(
-                key.isNotBlank()
-            ) {
-                onClick(key)
-            },
+            modifier = Modifier.clickable(enabled = key.isNotBlank()) { onClick(key) },
             text = stringResource(R.string.confirm),
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium.copy(
+                color = if (key.isNotBlank()) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                fontWeight = FontWeight.Medium
+            )
         )
     }
 }

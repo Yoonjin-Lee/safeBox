@@ -15,7 +15,6 @@ import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
 
 object Utils {
-    private const val ALGORITHM = "AES/CBC/PKCS5Padding"
     // ====== 암호화 파라미터 ======
     private const val VERSION: Byte = 1
     private const val SALT_LEN = 16            // 128-bit salt

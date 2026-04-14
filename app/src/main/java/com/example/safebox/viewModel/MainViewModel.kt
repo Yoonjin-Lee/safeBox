@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,13 +22,18 @@ class MainViewModel @Inject constructor(
     private val saveBitmapUseCase: SaveBitmapUseCase,
     private val getBitmapsUseCase: GetBitmapsUseCase
 ) : ViewModel() {
-    private var _bitmaps = MutableStateFlow<List<ImageEntity>>(emptyList())
-    val bitmaps: StateFlow<List<ImageEntity>> = _bitmaps
+    private val _bitmaps = MutableStateFlow<List<ImageEntity>>(emptyList())
+    val bitmaps: StateFlow<List<ImageEntity>> = _bitmaps.asStateFlow()
 
-    var selectedBitmap: Bitmap? = null
+    private val _selectedBitmap = MutableStateFlow<Bitmap?>(null)
+    val selectedBitmap: StateFlow<Bitmap?> = _selectedBitmap.asStateFlow()
 
-    private var _encodedBitmaps = MutableStateFlow<List<ByteArray>>(emptyList())
-    val encodedBitmaps: StateFlow<List<ByteArray>> = _encodedBitmaps
+    fun setSelectedBitmap(bitmap: Bitmap) {
+        _selectedBitmap.value = bitmap
+    }
+
+    private val _encodedBitmaps = MutableStateFlow<List<ByteArray>>(emptyList())
+    val encodedBitmaps: StateFlow<List<ByteArray>> = _encodedBitmaps.asStateFlow()
 
     /**
      * 사용자가 선택한 Uri의 bitmap을 3등분한다
@@ -54,9 +60,9 @@ class MainViewModel @Inject constructor(
     /**
      * 쪼개진 bitmap을 저장한다
      */
-    fun saveBitmapParts(params: List<ByteArray>) {
+    fun saveBitmapParts(params: List<ByteArray>, title: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            saveBitmapUseCase(params)
+            saveBitmapUseCase(SaveBitmapUseCase.Params(parts = params, name = title))
         }
     }
 

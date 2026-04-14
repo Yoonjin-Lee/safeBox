@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark mode -->
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+    <color name="light_gray">#FF2E5040</color>
+
+    <color name="background_green">#FF0D1B14</color>
+    <color name="light_button_color">#FF34C77B</color>
+    <color name="dark_button_color">#FF1E3D2C</color>
+    <color name="placeholder_color">#FF4DA882</color>
+</resources>

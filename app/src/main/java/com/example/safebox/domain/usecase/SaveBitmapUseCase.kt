@@ -11,16 +11,17 @@ import jakarta.inject.Inject
  */
 class SaveBitmapUseCase @Inject constructor(
     private val bitmapRepository: BitmapRepository
-)
-    : BaseUseCase<List<ByteArray>, Unit>(){
-    override suspend fun execute(param: List<ByteArray>) {
-        for (bitmap in param){
+) : BaseUseCase<SaveBitmapUseCase.Params, Unit>() {
+
+    data class Params(val parts: List<ByteArray>, val name: String)
+
+    override suspend fun execute(param: Params) {
+        param.parts.forEach { bitmap ->
             try {
-                bitmapRepository.saveBitmap(bitmap)
-            }catch (e : Exception){
+                bitmapRepository.saveBitmap(bitmap, param.name)
+            } catch (e: Exception) {
                 Log.e("SaveBitmapUseCase", "execute: ", e)
             }
         }
-        bitmapRepository.increaseImageCounter()
     }
 }

@@ -1,17 +1,39 @@
 <resources>
     <string name="app_name">safeBox</string>
+    <string name="photos">내 보관함</string>
+    <string name="photos_count">%d개 저장됨</string>
+    <string name="encrypted_badge">암호화됨</string>
+
+    <string name="upload_photos">사진 추가</string>
+    <string name="upload_photos_title">사진을\n선택하세요</string>
+    <string name="upload_photos_info">선택한 사진은 3등분으로 나뉘어 AES-256으로 암호화됩니다.</string>
+    <string name="upload_aes_chip">AES-256-GCM 암호화</string>
+    <string name="upload_zone_hint">탭하여 사진 선택</string>
+    <string name="upload_zone_sub">갤러리에서 가져오기</string>
+    <string name="select_photo">사진 선택하기</string>
+
+    <string name="encode_photo">암호화</string>
+    <string name="title_section_label">사진 제목</string>
+    <string name="title_placeholder">어떤 사진인지 입력하세요 (예: 여권, 증명사진)</string>
+    <string name="split_label">3조각으로 분할됨</string>
+    <string name="key_section_label">암호화 키</string>
+    <string name="input_key_placeholder">비밀번호를 입력하세요</string>
+    <string name="encode_warning">이 키를 잃어버리면 사진을 복구할 수 없습니다.</string>
+    <string name="encode">암호화하기</string>
+
+    <string name="input_key">복호화 키 입력</string>
+    <string name="confirm">확인</string>
+    <string name="wrong_key">잘못된 키입니다.</string>
+
+    <string name="decode_screen">복호화 완료</string>
+    <string name="decode_success">복호화 성공</string>
+    <string name="decode_file_name">파일명</string>
+    <string name="decode_time">복호화 시각</string>
+    <string name="tap_to_reveal">탭하여 사진 보기</string>
+    <string name="tap_to_hide">탭하여 가리기</string>
+    <string name="save">갤러리에 저장</string>
+    <string name="close">닫기</string>
+
     <string name="upload_picture">사진을 업로드하세요</string>
     <string name="picture_list">사진 리스트</string>
-    <string name="photos">photos</string>
-    <string name="input_key">키로 사용할 문구를 작성해주세요</string>
-    <string name="input_key_placeholder">문구를 작성하세요</string>
-    <string name="confirm">확인</string>
-    <string name="upload_photos">Upload Photos</string>
-    <string name="upload_photos_info">Select photos from your gallery to upload.</string>
-    <string name="select_photo">select photo</string>
-    <string name="encode_photo">Encode Photo</string>
-    <string name="encode">Encode</string>
-    <string name="decode_screen">Decoded Photo</string>
-    <string name="save">save</string>
-    <string name="wrong_key">잘못된 키입니다.</string>
 </resources>

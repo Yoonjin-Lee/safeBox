@@ -1,6 +1,8 @@
 package com.example.safebox.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -44,16 +46,17 @@ fun AppNavHost() {
             }
             entry(EncodeScreen) {
                 val vm = hiltViewModel<MainViewModel>()
+                val bitmap by vm.selectedBitmap.collectAsState()
                 EncodeScreen(
                     onBack = {
                         backStack.removeLastOrNull()
                         backStack.removeLastOrNull()
                     },
-                    bitmap = vm.selectedBitmap,
-                    onEncode = { bitmap, key ->
-                        val bitmaps = vm.splitBitmap(bitmap)
+                    bitmap = bitmap,
+                    onEncode = { bmp, title, key ->
+                        val bitmaps = vm.splitBitmap(bmp)
                         val bitmapParts = vm.encodeBitmap(bitmaps, key)
-                        vm.saveBitmapParts(bitmapParts)
+                        vm.saveBitmapParts(bitmapParts, title)
                     }
                 )
             }
