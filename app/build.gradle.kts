@@ -1,4 +1,3 @@
-import org.gradle.kotlin.dsl.support.kotlinCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -11,13 +10,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.safebox"
-    compileSdk = 36
+    namespace = "com.yoonjin.safebox"
+    compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.example.safebox"
+        applicationId = "com.yoonjin.safebox"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
