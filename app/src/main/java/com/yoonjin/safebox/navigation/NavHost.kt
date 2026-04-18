@@ -30,12 +30,8 @@ fun AppNavHost(contentPadding: PaddingValues = PaddingValues()) {
             entry(MainScreen) {
                 MainScreen(
                     goToAddScreen = { backStack.add(AddScreen) },
-                    goToDetailScreen = {
-                        backStack.add(
-                            DecodeScreenRoute(
-                                it
-                            )
-                        )
+                    goToDetailScreen = { name, key ->
+                        backStack.add(DecodeScreenRoute(name = name, key = key))
                     }
                 )
             }
@@ -62,9 +58,12 @@ fun AppNavHost(contentPadding: PaddingValues = PaddingValues()) {
                 )
             }
             entry<DecodeScreenRoute> {
+                val vm = androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel<MainViewModel>()
                 DecodeScreen(
                     onBackClick = { backStack.removeLastOrNull() },
-                    decodedByteArrays = it.byteList,
+                    selectedBitmapName = it.name,
+                    decryptKey = it.key,
+                    viewModel = vm
                 )
             }
         }

@@ -5,9 +5,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yoonjin.safebox.common.Utils
-import com.yoonjin.safebox.domain.entity.ImageEntity
+import com.yoonjin.safebox.domain.entity.ImageListEntity
 import com.yoonjin.safebox.domain.usecase.DeleteImageGroupUseCase
-import com.yoonjin.safebox.domain.usecase.GetBitmapsUseCase
+import com.yoonjin.safebox.domain.usecase.GetBitmapArrayUseCase
+import com.yoonjin.safebox.domain.usecase.GetBitmapListsUseCase
 import com.yoonjin.safebox.domain.usecase.SaveBitmapUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,11 +22,12 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val saveBitmapUseCase: SaveBitmapUseCase,
-    private val getBitmapsUseCase: GetBitmapsUseCase,
-    private val deleteImageGroupUseCase: DeleteImageGroupUseCase
+    private val getBitmapListsUseCase: GetBitmapListsUseCase,
+    private val deleteImageGroupUseCase: DeleteImageGroupUseCase,
+    private val getBitmapArrayUseCase: GetBitmapArrayUseCase
 ) : ViewModel() {
-    private val _bitmaps = MutableStateFlow<List<ImageEntity>>(emptyList())
-    val bitmaps: StateFlow<List<ImageEntity>> = _bitmaps.asStateFlow()
+    private val _bitmaps = MutableStateFlow<List<ImageListEntity>>(emptyList())
+    val bitmaps: StateFlow<List<ImageListEntity>> = _bitmaps.asStateFlow()
 
     private val _selectedBitmap = MutableStateFlow<Bitmap?>(null)
     val selectedBitmap: StateFlow<Bitmap?> = _selectedBitmap.asStateFlow()
@@ -92,9 +94,14 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    suspend fun getDecodedBitmaps(name: String, key: String): List<ByteArray> {
+        val encryptedList = getBitmapArrayUseCase(name)
+        return decodeBitmap(encryptedList, key)
+    }
+
     init {
         viewModelScope.launch {
-            getBitmapsUseCase(Unit).collectLatest {
+            getBitmapListsUseCase(Unit).collectLatest {
                 _bitmaps.value = it
 
                 Log.d("MainViewModel", "bitmaps: ${it.size}")

@@ -1,6 +1,10 @@
 package com.yoonjin.safebox.screens
 
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.net.Uri
+import androidx.exifinterface.media.ExifInterface
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -48,9 +52,8 @@ fun AddScreen(
     val pickMedia =
         rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
             uri?.let {
-                val bitmap = context.contentResolver.openInputStream(uri)?.use {
-                    BitmapFactory.decodeStream(it)
-                } ?: throw IllegalArgumentException("Invalid Uri")
+                val bitmap = loadOrientedBitmap(context.contentResolver, uri)
+                    ?: throw IllegalArgumentException("Invalid Uri")
                 mainViewModel.setSelectedBitmap(bitmap)
                 onNext()
             }
@@ -171,4 +174,34 @@ fun AddScreen(
             isEnabled = true
         )
     }
+}
+
+/**
+ * URI에서 비트맵을 로드하되, EXIF orientation을 읽어 올바른 방향으로 회전시켜 반환한다.
+ */
+fun loadOrientedBitmap(
+    contentResolver: android.content.ContentResolver,
+    uri: Uri
+): Bitmap? {
+    val raw = contentResolver.openInputStream(uri)?.use {
+        BitmapFactory.decodeStream(it)
+    } ?: return null
+
+    val orientation = contentResolver.openInputStream(uri)?.use { stream ->
+        ExifInterface(stream).getAttributeInt(
+            ExifInterface.TAG_ORIENTATION,
+            ExifInterface.ORIENTATION_NORMAL
+        )
+    } ?: ExifInterface.ORIENTATION_NORMAL
+
+    val matrix = Matrix()
+    when (orientation) {
+        ExifInterface.ORIENTATION_ROTATE_90    -> matrix.postRotate(90f)
+        ExifInterface.ORIENTATION_ROTATE_180   -> matrix.postRotate(180f)
+        ExifInterface.ORIENTATION_ROTATE_270   -> matrix.postRotate(270f)
+        ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> matrix.preScale(-1f, 1f)
+        ExifInterface.ORIENTATION_FLIP_VERTICAL   -> matrix.preScale(1f, -1f)
+        else -> return raw  // ORIENTATION_NORMAL — 회전 없음
+    }
+    return Bitmap.createBitmap(raw, 0, 0, raw.width, raw.height, matrix, true)
 }

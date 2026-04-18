@@ -6,6 +6,7 @@ import com.yoonjin.safebox.data.dao.ImageDao
 import com.yoonjin.safebox.data.dto.toEntity
 import com.yoonjin.safebox.data.dto.toImageDto
 import com.yoonjin.safebox.domain.entity.ImageEntity
+import com.yoonjin.safebox.domain.entity.ImageListEntity
 import com.yoonjin.safebox.domain.repository.BitmapRepository
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +22,7 @@ class BitmapRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun getBitmapList(): Flow<List<ImageEntity>> {
+    override suspend fun getBitmapList(): Flow<List<ImageListEntity>> {
         return imageDao.getAllFlow().map { list ->
             list.map { it.toEntity() }
         }
@@ -29,5 +30,9 @@ class BitmapRepositoryImpl @Inject constructor(
 
     override suspend fun deleteImageGroup(name: String) {
         imageDao.deleteByName(name)
+    }
+
+    override suspend fun getBitmapArray(name: String): List<ByteArray> {
+        return imageDao.getImageByName(name)
     }
 }

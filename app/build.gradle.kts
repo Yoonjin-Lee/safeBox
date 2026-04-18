@@ -25,7 +25,9 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            // 미사용 리소스 제거
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -71,6 +73,9 @@ dependencies {
     //RoomDB
     implementation(libs.room.runtime)
     ksp(libs.room.compiler)
+
+    //ExifInterface (이미지 방향 보정)
+    implementation(libs.androidx.exifinterface)
 
     //hilt
     implementation(libs.hilt.android)

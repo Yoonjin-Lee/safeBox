@@ -53,12 +53,12 @@ import java.util.Locale
 @Composable
 fun MainScreen(
     goToAddScreen: () -> Unit = {},
-    goToDetailScreen: (List<ByteArray>) -> Unit = {},
+    goToDetailScreen: (String, String) -> Unit = { _, _ -> },
 ) {
     val mainViewModel: MainViewModel = hiltViewModel()
     val imageEntityList by mainViewModel.bitmaps.collectAsStateWithLifecycle()
     var showInputKeyDialog by remember { mutableStateOf(false) }
-    var selectedImageBitmaps by remember { mutableStateOf(listOf<ByteArray>()) }
+    var selectedImageName by remember { mutableStateOf("") }
     var deleteTargetName by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
     val errorText = stringResource(R.string.wrong_key)
@@ -111,9 +111,8 @@ fun MainScreen(
             InputKeyDialog(
                 onClick = {
                     try {
-                        val decoded = mainViewModel.decodeBitmap(selectedImageBitmaps, it)
                         showInputKeyDialog = false
-                        goToDetailScreen(decoded)
+                        goToDetailScreen(selectedImageName, it)
                     } catch (e: Exception) {
                         Log.e("MainScreen", "InputKeyDialog: $e")
                         Toast.makeText(context, errorText, Toast.LENGTH_SHORT).show()
@@ -225,7 +224,7 @@ fun MainScreen(
                     ImageCard(
                         name = name ?: "unknown",
                         onClick = {
-                            selectedImageBitmaps = entities.map { it.byteArray }
+                            selectedImageName = name
                             showInputKeyDialog = true
                         },
                         onLongClick = {
