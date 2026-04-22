@@ -38,9 +38,6 @@ class MainViewModel @Inject constructor(
         _selectedBitmap.value = bitmap
     }
 
-    private val _encodedBitmaps = MutableStateFlow<List<ByteArray>>(emptyList())
-    val encodedBitmaps: StateFlow<List<ByteArray>> = _encodedBitmaps.asStateFlow()
-
     /**
      * 사용자가 선택한 Uri의 bitmap을 3등분한다
      * params - bitmap, num of chunks
