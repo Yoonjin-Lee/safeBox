@@ -51,8 +51,9 @@ fun AppNavHost(contentPadding: PaddingValues = PaddingValues()) {
                     },
                     bitmap = bitmap,
                     onEncode = { bmp, title, key ->
-                        val bitmaps = vm.splitBitmap(bmp)
-                        val bitmapParts = vm.encodeBitmap(bitmaps, key)
+                        val resized = vm.resizeBitmap(bmp)               // 1. 크기 줄이기
+                        val bitmaps = vm.splitBitmap(resized, 3)         // 2. 3분할
+                        val bitmapParts = vm.encodeBitmap(bitmaps, key)  // 3. 압축 + 암호화
                         vm.saveBitmapParts(bitmapParts, title)
                     }
                 )

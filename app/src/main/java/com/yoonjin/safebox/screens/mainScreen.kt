@@ -58,16 +58,16 @@ fun MainScreen(
     val mainViewModel: MainViewModel = hiltViewModel()
     val imageEntityList by mainViewModel.bitmaps.collectAsStateWithLifecycle()
     var showInputKeyDialog by remember { mutableStateOf(false) }
-    var selectedImageName by remember { mutableStateOf("") }
-    var deleteTargetName by remember { mutableStateOf<String?>(null) }
+    var selectedImageGroupName by remember { mutableStateOf("") }
+    var deleteTargetGroupName by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
     val errorText = stringResource(R.string.wrong_key)
-    val grouped = imageEntityList.groupBy { it.name }
+    val grouped = imageEntityList.groupBy { Pair(it.name, it.groupName) }
 
     // 삭제 확인 다이얼로그
-    deleteTargetName?.let { name ->
+    deleteTargetGroupName?.let { name ->
         AlertDialog(
-            onDismissRequest = { deleteTargetName = null },
+            onDismissRequest = { deleteTargetGroupName = null },
             title = {
                 Text(
                     text = stringResource(R.string.delete_title),
@@ -87,7 +87,7 @@ fun MainScreen(
             confirmButton = {
                 TextButton(onClick = {
                     mainViewModel.deleteImageGroup(name)
-                    deleteTargetName = null
+                    deleteTargetGroupName = null
                 }) {
                     Text(
                         text = stringResource(R.string.delete_confirm),
@@ -96,7 +96,7 @@ fun MainScreen(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { deleteTargetName = null }) {
+                TextButton(onClick = { deleteTargetGroupName = null }) {
                     Text(
                         text = stringResource(R.string.delete_cancel),
                         color = MaterialTheme.colorScheme.onSurface
@@ -112,7 +112,7 @@ fun MainScreen(
                 onClick = {
                     try {
                         showInputKeyDialog = false
-                        goToDetailScreen(selectedImageName, it)
+                        goToDetailScreen(selectedImageGroupName, it)
                     } catch (e: Exception) {
                         Log.e("MainScreen", "InputKeyDialog: $e")
                         Toast.makeText(context, errorText, Toast.LENGTH_SHORT).show()
@@ -220,15 +220,15 @@ fun MainScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 item { Spacer(Modifier.height(4.dp)) }
-                items(grouped.entries.toList()) { (name, entities) ->
+                items(grouped.entries.toList()) { (pair, entities) ->
                     ImageCard(
-                        name = name ?: "unknown",
+                        name = pair.first,
                         onClick = {
-                            selectedImageName = name
+                            selectedImageGroupName = pair.second
                             showInputKeyDialog = true
                         },
                         onLongClick = {
-                            deleteTargetName = name
+                            deleteTargetGroupName = pair.second
                         }
                     )
                 }

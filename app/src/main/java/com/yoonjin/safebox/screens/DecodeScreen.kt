@@ -3,6 +3,7 @@ package com.yoonjin.safebox.screens
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -79,7 +80,8 @@ fun DecodeScreen(
         errorMessage = null
         withContext(Dispatchers.IO) {
             try {
-                val decryptedParts = viewModel.getDecodedBitmaps(selectedBitmapName, decryptKey)
+                val decryptedParts = viewModel.getEncodedBitmaps(selectedBitmapName, decryptKey)
+                Log.d("SafeBoxLog", "decryptedParts: ${decryptedParts.size}")
                 if (decryptedParts.size < 3) {
                     errorMessage = "저장된 이미지 조각이 부족합니다 (${decryptedParts.size}/3)"
                     return@withContext
@@ -90,6 +92,7 @@ fun DecodeScreen(
                 }
                 mergedBitmap = mergeBitmapsHorizontal(bitmaps[0], bitmaps[1], bitmaps[2])
             } catch (e: Exception) {
+                Log.e("SafeBoxLog", e.toString())
                 errorMessage = "복호화 실패: 키를 확인해주세요"
             }
         }

@@ -16,12 +16,15 @@ interface ImageDao {
     @Delete
     suspend fun delete(imageDto: ImageDto)
 
-    @Query("DELETE FROM imagedto WHERE name = :name")
-    suspend fun deleteByName(name: String)
+    @Query("DELETE FROM imagedto WHERE groupName = :name")
+    suspend fun deleteByGroupName(name: String)
 
-    @Query("SELECT uuid, name, format FROM imagedto")
+    @Query("SELECT uuid, name, format, groupName FROM imagedto")
     fun getAllFlow(): Flow<List<ImageListDto>>
 
-    @Query("SELECT bitmap FROM imagedto WHERE name = :name")
-    suspend fun getImageByName(name: String): List<ByteArray>
+    @Query("SELECT bitmap FROM imagedto WHERE groupName = :name")
+    suspend fun getImageByGroupName(name: String): List<ByteArray>
+
+    @Query("SELECT COUNT(*) FROM imagedto")
+    suspend fun getNumberOfList(): Int
 }

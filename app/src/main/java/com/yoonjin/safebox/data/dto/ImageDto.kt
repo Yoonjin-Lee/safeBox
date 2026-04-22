@@ -14,14 +14,16 @@ data class ImageDto(
     @ColumnInfo val format: String,
     @ColumnInfo val name: String? = null,
     @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
-    val bitmap: ByteArray
+    val bitmap: ByteArray,
+    @ColumnInfo(defaultValue = "") val groupName: String
 ){
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is ImageDto) return false
         return uuid   == other.uuid   &&
                 format == other.format &&
-                bitmap.contentEquals(other.bitmap)   // ▲ 핵심
+                bitmap.contentEquals(other.bitmap) &&
+                groupName == other.groupName
     }
 
     override fun hashCode(): Int {
@@ -32,50 +34,12 @@ data class ImageDto(
     }
 }
 
-fun Bitmap.toImageDto(format: String, name: String? = null): ImageDto {
-    // format string에 따라 compress 형식을 지정
-    val compressFormat = when (format) {
-        "PNG" -> Bitmap.CompressFormat.PNG
-        "JPEG" -> Bitmap.CompressFormat.JPEG
-        "WEBP" -> Bitmap.CompressFormat.WEBP
-        else -> throw IllegalArgumentException("Invalid format: $format")
-    }
-
-    val byteArray = ByteArrayOutputStream().use {
-        this.compress(compressFormat, 100, it)
-        it.toByteArray()
-    }
-    return ImageDto(
-        uuid = UUID.randomUUID().toString(),
-        format = format,
-        bitmap = byteArray,
-        name = name
-    )
-}
-
-fun ImageDto.toEntity() : ImageEntity {
-    return ImageEntity(
-        id = uuid,
-        format = format,
-        byteArray = bitmap,
-        name = name
-    )
-}
-
-fun ImageDto.toEntity(byteArray: ByteArray) : ImageEntity {
-    return ImageEntity(
-        id = uuid,
-        format = format,
-        byteArray = byteArray,
-        name = name
-    )
-}
-
-fun ByteArray.toImageDto(format: String, name: String? = null) : ImageDto {
+fun ByteArray.toImageDto(format: String, name: String? = null, groupName: String) : ImageDto {
     return ImageDto(
         uuid = UUID.randomUUID().toString(),
         format = format,
         bitmap = this,
-        name = name
+        name = name,
+        groupName = groupName
     )
 }

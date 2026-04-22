@@ -3,6 +3,7 @@ package com.yoonjin.safebox.data.module
 import android.content.Context
 import androidx.room.Room
 import com.yoonjin.safebox.data.Database
+import com.yoonjin.safebox.data.MIGRATION_7_8
 import com.yoonjin.safebox.data.dao.ImageDao
 import dagger.Module
 import dagger.Provides
@@ -20,7 +21,7 @@ object RoomModule {
         @ApplicationContext context: Context
     ): Database = Room
         .databaseBuilder(context, Database::class.java, "safe_box.db")
-        .fallbackToDestructiveMigration()
+        .addMigrations(MIGRATION_7_8)
         .build()
 
     @Singleton

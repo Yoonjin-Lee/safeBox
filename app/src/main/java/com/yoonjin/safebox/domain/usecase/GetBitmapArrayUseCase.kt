@@ -8,6 +8,6 @@ class GetBitmapArrayUseCase @Inject constructor(
     private val bitmapRepository: BitmapRepository
 ) : BaseUseCase<String, List<ByteArray>>(){
     override suspend fun execute(param: String): List<ByteArray> {
-        return bitmapRepository.getBitmapArray(param)
+        return bitmapRepository.getBitmapArrayByGroupName(param)
     }
 }

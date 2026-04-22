@@ -17,7 +17,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import javax.inject.Inject
+import androidx.core.graphics.scale
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -70,9 +72,9 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun deleteImageGroup(name: String) {
+    fun deleteImageGroup(groupName: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            deleteImageGroupUseCase(name)
+            deleteImageGroupUseCase(groupName)
         }
     }
 
@@ -81,7 +83,8 @@ class MainViewModel @Inject constructor(
      */
     fun encodeBitmap(params: List<Bitmap>, key: String): List<ByteArray> {
         return params.map { bitmap ->
-            Utils.encrypt(Utils.bitmapToByteArray(bitmap), key)
+            val compressed = bitmapToLimitedByteArray(bitmap, 350_000)
+            Utils.encrypt(compressed, key)
         }
     }
 
@@ -94,7 +97,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    suspend fun getDecodedBitmaps(name: String, key: String): List<ByteArray> {
+    suspend fun getEncodedBitmaps(name: String, key: String): List<ByteArray> {
         val encryptedList = getBitmapArrayUseCase(name)
         return decodeBitmap(encryptedList, key)
     }
@@ -107,5 +110,41 @@ class MainViewModel @Inject constructor(
                 Log.d("MainViewModel", "bitmaps: ${it.size}")
             }
         }
+    }
+
+    fun resizeBitmap(bitmap: Bitmap): Bitmap {
+        val maxSize = 1024
+
+        val ratio = minOf(
+            maxSize.toFloat() / bitmap.width,
+            maxSize.toFloat() / bitmap.height
+        )
+
+        return bitmap.scale(
+            (bitmap.width * ratio).toInt(),
+            (bitmap.height * ratio).toInt()
+        )
+    }
+
+    fun bitmapToLimitedByteArray(
+        bitmap: Bitmap,
+        maxBytes: Int = 350_000 // 350KB 목표
+    ): ByteArray {
+        var quality = 90
+        var result: ByteArray
+
+        do {
+            val stream = ByteArrayOutputStream()
+            stream.reset()
+
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream)
+            result = stream.toByteArray()
+
+            quality -= 5
+        } while (result.size > maxBytes && quality >= 20)
+
+        Log.d("SafeBoxLog", "final size = ${result.size / 1024} KB")
+
+        return result
     }
 }

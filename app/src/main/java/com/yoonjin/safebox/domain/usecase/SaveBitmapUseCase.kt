@@ -15,12 +15,14 @@ class SaveBitmapUseCase @Inject constructor(
     data class Params(val parts: List<ByteArray>, val name: String)
 
     override suspend fun execute(param: Params) {
+        val groupName = bitmapRepository.getGroupName()
         param.parts.forEach { bitmap ->
             try {
-                bitmapRepository.saveBitmap(bitmap, param.name)
+                bitmapRepository.saveBitmap(bitmap, param.name, groupName)
             } catch (e: Exception) {
                 Log.e("SaveBitmapUseCase", "execute: ", e)
             }
         }
+        bitmapRepository.setGroupName(groupName)
     }
 }
