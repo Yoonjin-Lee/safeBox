@@ -61,7 +61,8 @@ import java.util.Locale
 @Composable
 fun DecodeScreen(
     onBackClick: () -> Unit,
-    selectedBitmapName: String,
+    groupName: String,
+    name: String,
     decryptKey: String,
     viewModel: MainViewModel
 ) {
@@ -75,12 +76,12 @@ fun DecodeScreen(
     var mergedBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
     // 비동기로 복호화 후 비트맵 병합
-    LaunchedEffect(selectedBitmapName, decryptKey) {
+    LaunchedEffect(groupName, decryptKey) {
         isLoading = true
         errorMessage = null
         withContext(Dispatchers.IO) {
             try {
-                val decryptedParts = viewModel.getEncodedBitmaps(selectedBitmapName, decryptKey)
+                val decryptedParts = viewModel.getEncodedBitmaps(groupName, decryptKey)
                 Log.d("SafeBoxLog", "decryptedParts: ${decryptedParts.size}")
                 if (decryptedParts.size < 3) {
                     errorMessage = "저장된 이미지 조각이 부족합니다 (${decryptedParts.size}/3)"
@@ -294,7 +295,7 @@ fun DecodeScreen(
                             )
                             InfoRow(
                                 label = "파일명",
-                                value = selectedBitmapName
+                                value = name
                             )
                         }
                         Spacer(Modifier.height(8.dp))

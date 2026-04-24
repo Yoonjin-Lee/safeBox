@@ -9,6 +9,7 @@ data object MainScreen : NavKey
 @Serializable
 data class DecodeScreenRoute(
     val name: String,
+    val groupName: String,
     val key: String,
 ) : NavKey
 

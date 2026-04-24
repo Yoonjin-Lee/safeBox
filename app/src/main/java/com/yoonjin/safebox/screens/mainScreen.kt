@@ -53,13 +53,13 @@ import java.util.Locale
 @Composable
 fun MainScreen(
     goToAddScreen: () -> Unit = {},
-    goToDetailScreen: (String, String) -> Unit = { _, _ -> },
+    goToDetailScreen: (String, String, String) -> Unit = { _, _, _ -> },
 ) {
     val mainViewModel: MainViewModel = hiltViewModel()
     val imageEntityList by mainViewModel.bitmaps.collectAsStateWithLifecycle()
     var showInputKeyDialog by remember { mutableStateOf(false) }
-    var selectedImageGroupName by remember { mutableStateOf("") }
-    var deleteTargetGroupName by remember { mutableStateOf<String?>(null) }
+    var selectedImageGroupName by remember { mutableStateOf<Pair<String, String>?>(null) }
+    var deleteTargetGroupName by remember { mutableStateOf<Pair<String, String>?>(null) } //name, groupName
     val context = LocalContext.current
     val errorText = stringResource(R.string.wrong_key)
     val grouped = imageEntityList.groupBy { Pair(it.name, it.groupName) }
@@ -78,7 +78,7 @@ fun MainScreen(
             },
             text = {
                 Text(
-                    text = "\"$name\" 을(를) 삭제할까요?\n삭제 후에는 복구할 수 없습니다.",
+                    text = "\"${name.first}\" 을(를) 삭제할까요?\n삭제 후에는 복구할 수 없습니다.",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                     )
@@ -86,7 +86,7 @@ fun MainScreen(
             },
             confirmButton = {
                 TextButton(onClick = {
-                    mainViewModel.deleteImageGroup(name)
+                    mainViewModel.deleteImageGroup(name.second)
                     deleteTargetGroupName = null
                 }) {
                     Text(
@@ -112,7 +112,9 @@ fun MainScreen(
                 onClick = {
                     try {
                         showInputKeyDialog = false
-                        goToDetailScreen(selectedImageGroupName, it)
+                        selectedImageGroupName?.let { pair ->
+                            goToDetailScreen(pair.first, pair.second, it)
+                        }
                     } catch (e: Exception) {
                         Log.e("MainScreen", "InputKeyDialog: $e")
                         Toast.makeText(context, errorText, Toast.LENGTH_SHORT).show()
@@ -224,11 +226,11 @@ fun MainScreen(
                     ImageCard(
                         name = pair.first,
                         onClick = {
-                            selectedImageGroupName = pair.second
+                            selectedImageGroupName = pair
                             showInputKeyDialog = true
                         },
                         onLongClick = {
-                            deleteTargetGroupName = pair.second
+                            deleteTargetGroupName = pair
                         }
                     )
                 }
