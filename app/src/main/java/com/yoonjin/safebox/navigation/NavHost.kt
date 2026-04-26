@@ -17,6 +17,8 @@ import com.yoonjin.safebox.screens.DecodeScreen
 import com.yoonjin.safebox.screens.EncodeScreen
 import com.yoonjin.safebox.screens.MainScreen
 import com.yoonjin.safebox.viewModel.MainViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Composable
 fun AppNavHost(contentPadding: PaddingValues = PaddingValues()) {
@@ -51,10 +53,12 @@ fun AppNavHost(contentPadding: PaddingValues = PaddingValues()) {
                     },
                     bitmap = bitmap,
                     onEncode = { bmp, title, key ->
-                        val resized = vm.resizeBitmap(bmp)               // 1. 크기 줄이기
-                        val bitmaps = vm.splitBitmap(resized, 3)         // 2. 3분할
-                        val bitmapParts = vm.encodeBitmap(bitmaps, key)  // 3. 압축 + 암호화
-                        vm.saveBitmapParts(bitmapParts, title)
+                        withContext(Dispatchers.IO) {
+                            val resized = vm.resizeBitmap(bmp)               // 1. 크기 줄이기
+                            val bitmaps = vm.splitBitmap(resized, 3)         // 2. 3분할
+                            val bitmapParts = vm.encodeBitmap(bitmaps, key)  // 3. 압축 + 암호화
+                            vm.saveBitmapParts(bitmapParts, title)
+                        }
                     }
                 )
             }

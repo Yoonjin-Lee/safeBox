@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -50,6 +49,7 @@ import com.yoonjin.safebox.common.ImageSaver
 import com.yoonjin.safebox.component.ButtonStyle
 import com.yoonjin.safebox.component.CommonButton
 import com.yoonjin.safebox.component.Header
+import com.yoonjin.safebox.component.LoadingDialog
 import com.yoonjin.safebox.viewModel.MainViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -75,27 +75,45 @@ fun DecodeScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var mergedBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
+    if (isLoading) {
+        LoadingDialog(
+            title = stringResource(R.string.decode_loading_title),
+            message = stringResource(R.string.decode_loading_message)
+        )
+    }
+
     // 비동기로 복호화 후 비트맵 병합
     LaunchedEffect(groupName, decryptKey) {
         isLoading = true
         errorMessage = null
-        withContext(Dispatchers.IO) {
+        val result = withContext(Dispatchers.IO) {
             try {
                 val decryptedParts = viewModel.getEncodedBitmaps(groupName, decryptKey)
                 Log.d("SafeBoxLog", "decryptedParts: ${decryptedParts.size}")
                 if (decryptedParts.size < 3) {
-                    errorMessage = "저장된 이미지 조각이 부족합니다 (${decryptedParts.size}/3)"
-                    return@withContext
+                    return@withContext Result.failure<Bitmap>(
+                        IllegalStateException("저장된 이미지 조각이 부족합니다 (${decryptedParts.size}/3)")
+                    )
                 }
                 val bitmaps = decryptedParts.map { bytes ->
                     BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                         ?: throw IllegalStateException("비트맵 디코딩 실패")
                 }
-                mergedBitmap = mergeBitmapsHorizontal(bitmaps[0], bitmaps[1], bitmaps[2])
+                Result.success(mergeBitmapsHorizontal(bitmaps[0], bitmaps[1], bitmaps[2]))
             } catch (e: Exception) {
                 Log.e("SafeBoxLog", e.toString())
-                errorMessage = "복호화 실패: 키를 확인해주세요"
+                Result.failure(e)
             }
+        }
+        mergedBitmap = result.getOrNull()
+        val failure = result.exceptionOrNull()
+        errorMessage = when {
+            failure == null -> null
+            failure.message?.startsWith("저장된 이미지 조각이 부족합니다") == true -> failure.message
+            else -> "복호화 실패: 키를 확인해주세요"
+        }
+        if (mergedBitmap != null) {
+            errorMessage = null
         }
         isLoading = false
     }
@@ -121,30 +139,7 @@ fun DecodeScreen(
                 when {
                     // 로딩 중
                     isLoading -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(240.dp)
-                                .clip(RoundedCornerShape(16.dp))
-                                .background(MaterialTheme.colorScheme.surfaceVariant),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                CircularProgressIndicator(
-                                    color = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(36.dp)
-                                )
-                                Text(
-                                    text = "복호화 중...",
-                                    style = MaterialTheme.typography.bodySmall.copy(
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                                    )
-                                )
-                            }
-                        }
+                        Spacer(Modifier.height(240.dp))
                     }
 
                     // 에러 발생

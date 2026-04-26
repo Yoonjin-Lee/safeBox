@@ -63,10 +63,8 @@ class MainViewModel @Inject constructor(
     /**
      * 쪼개진 bitmap을 저장한다
      */
-    fun saveBitmapParts(params: List<ByteArray>, title: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            saveBitmapUseCase(SaveBitmapUseCase.Params(parts = params, name = title))
-        }
+    suspend fun saveBitmapParts(params: List<ByteArray>, title: String) {
+        saveBitmapUseCase(SaveBitmapUseCase.Params(parts = params, name = title))
     }
 
     fun deleteImageGroup(groupName: String) {

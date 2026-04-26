@@ -1,6 +1,7 @@
 package com.yoonjin.safebox.screens
 
 import android.graphics.Bitmap
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,12 +22,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -35,16 +38,29 @@ import com.yoonjin.safebox.R
 import com.yoonjin.safebox.component.ButtonStyle
 import com.yoonjin.safebox.component.CommonButton
 import com.yoonjin.safebox.component.Header
+import com.yoonjin.safebox.component.LoadingDialog
+import kotlinx.coroutines.launch
 
 @Composable
 fun EncodeScreen(
     onBack: () -> Unit = {},
     bitmap: Bitmap? = null,
-    onEncode: (Bitmap, String, String) -> Unit = { _, _, _ -> }
+    onEncode: suspend (Bitmap, String, String) -> Unit = { _, _, _ -> }
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var title by remember { mutableStateOf("") }
     var key by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
     val isEnabled = title.isNotBlank() && key.isNotBlank()
+    val encodeErrorMessage = stringResource(R.string.encode_error)
+
+    if (isLoading) {
+        LoadingDialog(
+            title = stringResource(R.string.encode_loading_title),
+            message = stringResource(R.string.encode_loading_message)
+        )
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -203,11 +219,21 @@ fun EncodeScreen(
                 text = stringResource(R.string.encode),
                 onClick = {
                     bitmap?.let {
-                        onEncode(bitmap, title, key)
-                        onBack()
+                        scope.launch {
+                            isLoading = true
+                            try {
+                                onEncode(bitmap, title, key)
+                                onBack()
+                            } catch (e: Exception) {
+                                Toast.makeText(context, encodeErrorMessage, Toast.LENGTH_SHORT)
+                                    .show()
+                            } finally {
+                                isLoading = false
+                            }
+                        }
                     }
                 },
-                isEnabled = isEnabled
+                isEnabled = isEnabled && !isLoading
             )
         }
     }

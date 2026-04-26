@@ -20,6 +20,9 @@
     <string name="input_key_placeholder">비밀번호를 입력하세요</string>
     <string name="encode_warning">이 키를 잃어버리면 사진을 복구할 수 없습니다.</string>
     <string name="encode">암호화하기</string>
+    <string name="encode_loading_title">암호화 중...</string>
+    <string name="encode_loading_message">사진을 나누고 안전하게 저장하고 있어요.</string>
+    <string name="encode_error">암호화에 실패했습니다. 다시 시도해주세요.</string>
 
     <string name="input_key">복호화 키 입력</string>
     <string name="confirm">확인</string>
@@ -30,6 +33,8 @@
 
     <string name="decode_screen">복호화 완료</string>
     <string name="decode_success">복호화 성공</string>
+    <string name="decode_loading_title">복호화 중...</string>
+    <string name="decode_loading_message">키를 확인하고 사진을 복원하고 있어요.</string>
     <string name="decode_file_name">파일명</string>
     <string name="decode_time">복호화 시각</string>
     <string name="tap_to_reveal">탭하여 사진 보기</string>
