@@ -69,11 +69,20 @@ fun DecodeScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val decodeTime = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault()).format(Date())
+    val saveSuccessMessageFormat = stringResource(R.string.save_success, "%s")
+    val saveFailureMessage = stringResource(R.string.save_failure)
 
     var isRevealed by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(true) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var decodeError by remember { mutableStateOf<DecodeError?>(null) }
     var mergedBitmap by remember { mutableStateOf<Bitmap?>(null) }
+    val errorMessage = when (val error = decodeError) {
+        is DecodeError.InsufficientImageParts -> {
+            stringResource(R.string.decode_error_insufficient_image_parts, error.partsCount)
+        }
+        DecodeError.Failure -> stringResource(R.string.decode_failure_check_key)
+        null -> null
+    }
 
     if (isLoading) {
         LoadingDialog(
@@ -85,19 +94,19 @@ fun DecodeScreen(
     // 비동기로 복호화 후 비트맵 병합
     LaunchedEffect(groupName, decryptKey) {
         isLoading = true
-        errorMessage = null
+        decodeError = null
         val result = withContext(Dispatchers.IO) {
             try {
                 val decryptedParts = viewModel.getEncodedBitmaps(groupName, decryptKey)
                 Log.d("SafeBoxLog", "decryptedParts: ${decryptedParts.size}")
                 if (decryptedParts.size < 3) {
                     return@withContext Result.failure<Bitmap>(
-                        IllegalStateException("저장된 이미지 조각이 부족합니다 (${decryptedParts.size}/3)")
+                        InsufficientImagePartsException(decryptedParts.size)
                     )
                 }
                 val bitmaps = decryptedParts.map { bytes ->
                     BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                        ?: throw IllegalStateException("비트맵 디코딩 실패")
+                        ?: throw BitmapDecodeException()
                 }
                 Result.success(mergeBitmapsHorizontal(bitmaps[0], bitmaps[1], bitmaps[2]))
             } catch (e: Exception) {
@@ -107,13 +116,15 @@ fun DecodeScreen(
         }
         mergedBitmap = result.getOrNull()
         val failure = result.exceptionOrNull()
-        errorMessage = when {
+        decodeError = when {
             failure == null -> null
-            failure.message?.startsWith("저장된 이미지 조각이 부족합니다") == true -> failure.message
-            else -> "복호화 실패: 키를 확인해주세요"
+            failure is InsufficientImagePartsException -> {
+                DecodeError.InsufficientImageParts(failure.partsCount)
+            }
+            else -> DecodeError.Failure
         }
         if (mergedBitmap != null) {
-            errorMessage = null
+            decodeError = null
         }
         isLoading = false
     }
@@ -163,7 +174,7 @@ fun DecodeScreen(
                                     )
                                 )
                                 Text(
-                                    text = errorMessage ?: "",
+                                    text = errorMessage,
                                     style = MaterialTheme.typography.bodyMedium.copy(
                                         color = MaterialTheme.colorScheme.onErrorContainer
                                     )
@@ -289,7 +300,7 @@ fun DecodeScreen(
                                 value = decodeTime
                             )
                             InfoRow(
-                                label = "파일명",
+                                label = stringResource(R.string.decode_file_name),
                                 value = name
                             )
                         }
@@ -316,7 +327,11 @@ fun DecodeScreen(
                                     quality = 92
                                 )
                                 withContext(Dispatchers.Main) {
-                                    val msg = if (saved != null) "저장됨: $saved" else "저장 실패"
+                                    val msg = if (saved != null) {
+                                        saveSuccessMessageFormat.format(saved)
+                                    } else {
+                                        saveFailureMessage
+                                    }
                                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                                 }
                             }
@@ -368,6 +383,17 @@ private fun InfoRow(label: String, value: String) {
         )
     }
 }
+
+private sealed class DecodeError {
+    data class InsufficientImageParts(val partsCount: Int) : DecodeError()
+    data object Failure : DecodeError()
+}
+
+private class InsufficientImagePartsException(
+    val partsCount: Int
+) : IllegalStateException()
+
+private class BitmapDecodeException : IllegalStateException()
 
 fun mergeBitmapsHorizontal(b1: Bitmap, b2: Bitmap, b3: Bitmap): Bitmap {
     val width = b1.width + b2.width + b3.width

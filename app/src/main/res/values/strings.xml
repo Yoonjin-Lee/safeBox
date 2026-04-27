@@ -37,9 +37,14 @@
     <string name="decode_loading_message">키를 확인하고 사진을 복원하고 있어요.</string>
     <string name="decode_file_name">파일명</string>
     <string name="decode_time">복호화 시각</string>
+    <string name="decode_error_insufficient_image_parts">저장된 이미지 조각이 부족합니다 (%1$d/3)</string>
+    <string name="decode_error_bitmap_decode_failed">비트맵 디코딩 실패</string>
+    <string name="decode_failure_check_key">복호화 실패: 키를 확인해주세요</string>
     <string name="tap_to_reveal">탭하여 사진 보기</string>
     <string name="tap_to_hide">탭하여 가리기</string>
     <string name="save">갤러리에 저장</string>
+    <string name="save_success">저장됨: %1$s</string>
+    <string name="save_failure">저장 실패</string>
     <string name="close">닫기</string>
 
     <string name="upload_picture">사진을 업로드하세요</string>
